@@ -1,0 +1,22 @@
+digraph "General Overview"
+{
+  rankdir=BT;
+  bgcolor= transparent;
+
+  node[fontcolor=black, fontname="DejaVuSansMono", fontsize=8, height=0.25];
+  node[shape=record, style="filled", color="#A3B4D6", fillcolor="#E8ECF5"];
+  edge[color="#000090"];
+
+ FACE[label="Face", URL="\ref Dice::Face"];
+ DICE[label="Dice", URL="\ref Dice::Dice"];
+ DIE[label="Die", URL="\ref Dice::Die"];
+ ROLL[label="Roll", URL="\ref Dice::Roll"];
+
+ edge[style=""];
+ edge[arrowhead="diamond"]; // Composition
+ DIE -> FACE;
+ DICE -> ROLL;
+
+ edge[arrowhead="odiamond"]; // Aggregation
+ DICE -> DIE;
+}

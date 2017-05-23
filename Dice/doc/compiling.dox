@@ -1,0 +1,75 @@
+/*! @file
+* @author Mizux <dev@mizux.net>
+* @copyright Copyright (c) Mizux All Rights Reserved
+*/
+
+/*! @page Dice_compiling Compiling
+  @tableofcontents
+  @section Dice_compiling_sec_1 Supported Distribution
+  Project is currently known to compile and run on the following distribution:
+
+  @li Archlinux using gcc5.3.0, Qt5.6
+  @li Archlinux using clang3.7.1, Qt5.6
+
+  It is very possible that the project will compile with other compilers and run on
+  other distribution, though those mentioned above have been tested.
+
+  @section Dice_compiling_sec_2 Requirements
+  As well as one of the above supported distribution, Project make use of some
+  third party external libraries and others.
+  These libraries are as follows:
+
+  @li Git >= 2.7.4 (http://jonas.nitro.dk/git/quick-reference.html)
+  @li C++ Developer > junior (https://isocpp.org/faq)
+  @li cmake >= 3.5.1 (https://cmake.org/cmake/help/latest/)
+  @li gcc >= 5.3.0 (http://linux.die.net/man/1/gcc)
+  @li ld >= 2.26 (http://linux.die.net/man/1/ld)
+  @li STL (http://www.cplusplus.com/reference/iostream/)
+
+  To Build Application you also need:
+  @li Qt >= 5.5 (http://qt-project.org/doc/qt-5.5/)
+
+  To Build Documentation you need:
+  @li Doxygen >= 1.8.11 (http://www.stack.nl/~dimitri/doxygen/manual.html)
+  @li Graphviz (Dot) >= 2.38.0 (http://www.graphviz.org/Documentation.php)
+
+  @section Dice_compiling_sec_3 Compiling on GNU/Linux systems
+  Compiling on GNU/Linux and similar systems follows the familiar cmake .., make,
+  make install idiom.
+	note: Here we will use ninja generator
+
+  @subsection Dice_compiling_sec_3_0 Compiling sources
+  Firstly you can invoke CMAKE configuration tool:
+  @code{sh}
+	mkdir build && cd build
+  cmake -GNinja ..
+  @endcode
+  Hopefully this will finish successfully and give you a summary of what options
+  were configured.  If the summary shows something you didn't want, go back and
+  check your configure options or directly edit the CMakeList.txt.
+
+  Now you can build the code.
+  @code{sh}
+	cd build
+  ninja
+  @endcode
+
+  @subsection Dice_compiling_sec_3_1 Cleaning sources
+  To clean up build files
+  @code{sh}
+  cd build
+	ninja clean
+  @endcode
+
+  @subsection Dice_compiling_sec_3_2 Generate Doxygen
+  You can also build the \b USEFULL documentation:
+  @code{sh}
+  cd build
+  ninja libDice_doc
+  @endcode
+
+  and display it with:
+  @code{sh}
+  chromium-browser build/dev/share/doc/libdice/html/index.html
+  @endcode
+**/

@@ -1,0 +1,14 @@
+/*! @file
+* @author Mizux <dev@mizux.net>
+* @copyright Copyright (c) Mizux All Rights Reserveid
+*/
+
+/*! @mainpage Dice Library
+This is the Project documentation.
+@section Dice_main Introduction
+The documentation for the Project is split into the following sections:
+
+@li @ref Dice_arch
+@li @ref Dice_coding_standards
+@li @ref Dice_compiling
+**/

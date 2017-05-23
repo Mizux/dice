@@ -1,0 +1,44 @@
+/*! @file
+* @author Mizux <dev@mizux.net>
+* @copyright Copyright (c) Mizux All Rights Reserved
+*/
+
+/*! @page Dice_coding_standards Coding Standards
+
+  This page details the coding standards and general style that should be employed
+  on code for the Project.
+
+  The documentation for the project is split into the following sections:
+  <UL>
+  <LI> @ref Dice_code_standards_sec_1
+  <LI> @ref Dice_code_standards_sec_2
+  </UL>
+
+  @section Dice_code_standards_sec_1 Directory Layout
+  This section contains some general guidelines on arranging files.
+
+  The source code is organize as folllow :
+  <UL>
+  <LI> @b /doc: Meta doxygen documentation files (i.e. .dox).
+  <LI> @b /include: Public header files (i.e. .hpp .hxx).
+  <LI> @b /src: Implementation files (i.e. .cpp, _p.cpp, _p.hpp).
+  <LI> @b /test: Unit test files.
+  <LI> @b /build: Build directory.
+	<UL>
+	<LI> @b /lib: Library generated files (i.e. .so).
+    <LI> @b /bin: Binary generated files.
+    <LI> @b /doc: Documentation generated files.
+    </UL>
+  </UL>
+  The implementation and public header files should appear in separate
+	directory.
+
+  @section Dice_code_standards_sec_2 Style Guide
+  Please look at the .clang-format file at the root of the project.
+  To use it, you can use the following command (i.e. put it in a bash function).
+  @code{.sh}
+  find . -not -path "./build/*" -type f -iname "*.[hc]pp" \
+  -exec echo "Formatting {}" \; \
+  -exec clang-format -style=file -i {} \;
+  @endcode
+**/

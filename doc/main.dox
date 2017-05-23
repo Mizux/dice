@@ -1,0 +1,11 @@
+/*! @file
+* @author Mizux <dev@mizux.net>
+*/
+
+/*! @mainpage Dice
+This is the Cross-Project documentation.
+
+This repository contains several samples:
+@li @ref Dice_main "libDice"
+@li @ref DiceApp_main "DiceApp"
+**/

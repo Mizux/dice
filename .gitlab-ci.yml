@@ -1,0 +1,25 @@
+image: mizux/cpp:latest
+
+stages:
+  - build
+  - test
+
+build:linux:
+  stage: build
+  script:
+    - mkdir build && cd build
+    - cmake ..
+    - make
+  artifacts:
+    paths:
+      - build/
+    expire_in: 1 week
+
+test:linux:
+  stage: test
+  script:
+    - cd build
+    - ctest --output-on-failure
+  dependencies:
+    - build:linux
+
