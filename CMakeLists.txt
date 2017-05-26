@@ -27,40 +27,37 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 #############
 ##  GCOVR  ##
 #############
-set(ENABLE_GCOV ON)
+option(ENABLE_GCOV "Compile with coverage option" ON)
 if(${ENABLE_GCOV})
 	if(CMAKE_COMPILER_IS_GNUCXX) # gcc / gcov
 		set(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
 		set(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
 		set(CMAKE_SHARED_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 		set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
-		add_custom_target(coverage
-			COMMAND ${CMAKE_COMMAND} -E remove_directory coverage
-			COMMAND ${CMAKE_COMMAND} -E make_directory coverage
-			COMMAND ctest --output-on-failure
-			COMMAND ../tools/gcovr --root=.. --delete
-			--exclude ".*/test/.*" --exclude ".*/catch.hpp"
-			--exclude ".*/moc_.*" --exclude ".*/qrc_.*"
-			--html --html-details
-			--output coverage/index.html
-			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-			COMMENT "Generating code coverage" VERBATIM)
 	elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang") # clang / llvm-cov gcov
 		set(CMAKE_C_FLAGS "-g -O0 --coverage")
 		set(CMAKE_CXX_FLAGS "-g -O0 --coverage")
 		set(CMAKE_SHARED_LINKER_FLAGS "--coverage")
 		set(CMAKE_EXE_LINKER_FLAGS "--coverage")
+	endif()
+
+	find_program(GCOVR_PRG gcovr ./tools)
+	if(GCOVR_PRG)
+		message(STATUS "Found gcovr: ${GCOVR_PRG}")
 		add_custom_target(coverage
 			COMMAND ${CMAKE_COMMAND} -E remove_directory coverage
 			COMMAND ${CMAKE_COMMAND} -E make_directory coverage
 			COMMAND ctest --output-on-failure
-			COMMAND ../tools/gcovr --root=.. --delete --use-llvm-cov
-			--exclude ".*/test/.*" --exclude ".*/catch.hpp"
-			--exclude ".*/moc_.*" --exclude ".*/qrc_.*"
-			--html --html-details
-			--output coverage/index.html
-			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-			COMMENT "Generating code coverage" VERBATIM)
+			COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
+			--exclude ".*/Catch.hpp" --exclude=".*/test/"
+			--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
+			#COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
+			#--exclude ".*/Catch.hpp" --exclude ".*/test/"
+			#--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
+			#--html --html-details --output coverage/index.html
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+	else(})
+		message(FATAL_ERROR "Can't find gcovr")
 	endif()
 endif()
 

@@ -44,6 +44,7 @@ import xml.dom.minidom
 import datetime
 import posixpath
 import itertools
+import zlib
 
 from optparse import OptionParser
 from string import Template
@@ -61,14 +62,16 @@ medium_color = "#FFFF55"
 high_color = "LightGreen"
 covered_color = "LightGreen"
 uncovered_color = "LightPink"
+takenBranch_color = "Green"
+notTakenBranch_color = "Red"
 
-__version__ = "3.3-prerelease"
+__version__ = "3.3"
 src_revision = "$Revision$"
 
 output_re = re.compile("[Cc]reating [`'](.*)'$")
 source_re = re.compile("[Cc]annot open (source|graph) file")
 
-starting_dir = os.getcwd()
+starting_dir = os.path.abspath(os.getcwd())
 
 exclude_line_flag = "_EXCL_"
 exclude_line_pattern = re.compile('([GL]COVR?)_EXCL_(LINE|START|STOP)')
@@ -339,6 +342,11 @@ def link_walker(path):
         for root, dirs, files in os.walk(
             os.path.abspath(path), followlinks=True
         ):
+            for exc in options.exclude_dirs:
+                for d in dirs:
+                    m = exc.search(d)
+                    if m is not None:
+                        dirs[:] = [d for d in dirs if d is not m.group()]
             yield (os.path.abspath(os.path.realpath(root)), dirs, files)
     else:
         targets = [os.path.abspath(path)]
@@ -461,10 +469,19 @@ def get_datafiles(flist, options):
     return allfiles
 
 
+noncode_mapper = dict.fromkeys(ord(i) for i in '}{')
+def is_non_code(code):
+    if sys.version_info < (3,0):
+        code = code.strip().translate(None, '}{')
+    else:
+        code = code.strip().translate(noncode_mapper)
+    return len(code) == 0 or code.startswith("//") or code == 'else'
+
+
 #
 # Process a single gcov datafile
 #
-def process_gcov_data(data_fname, covdata, options):
+def process_gcov_data(data_fname, covdata, source_fname, options):
     INPUT = open(data_fname, "r")
     #
     # Get the filename
@@ -476,13 +493,45 @@ def process_gcov_data(data_fname, covdata, options):
         raise RuntimeError(
             'Fatal error parsing gcov file, line 1: \n\t"%s"' % line.rstrip()
         )
+    #
+    # Find the source file
+    #
     currdir = os.getcwd()
-    os.chdir(starting_dir)
-    if sys.version_info >= (2, 6):
-        fname = os.path.abspath((segments[-1]).strip())
+    if options.root is None:
+        root_dir = starting_dir
     else:
-        fname = aliases.unalias_path(os.path.abspath((segments[-1]).strip()))
-    os.chdir(currdir)
+        root_dir = os.path.abspath(options.root)
+    if source_fname is None:
+        common_dir = os.path.commonprefix([data_fname, currdir])
+        if sys.version_info >= (2, 6):
+            fname = aliases.unalias_path(os.path.join(common_dir, segments[-1].strip()))
+        else:
+            fname = aliases.unalias_path(os.path.join(common_dir, segments[-1]).strip())
+    else:
+        # 0. Try using the current working directory as the source directory
+        fname = os.path.join(currdir, segments[-1].strip())
+        if not os.path.exists(fname):
+            # 1. Try using the path to common prefix with the root_dir as the source directory
+            fname = os.path.join(root_dir, segments[-1].strip())
+            if not os.path.exists(fname):
+                # 2. Try using the starting directory as the source directory
+                fname = os.path.join(starting_dir, segments[-1].strip())
+                if not os.path.exists(fname):
+                    # 3. Try using the path to the gcda file as the source directory
+                    fname = os.path.join(os.path.dirname(source_fname), os.path.basename(segments[-1].strip()))
+
+
+    if options.verbose:
+        print("Finding source file corresponding to a gcov data file")
+        print('  currdir      '+currdir)
+        print('  gcov_fname   '+data_fname)
+        print('               '+str(segments))
+        print('  source_fname '+source_fname)
+        print('  root         '+root_dir)
+        #print('  common_dir   '+common_dir)
+        #print('  subdir       '+subdir)
+        print('  fname        '+fname)
+
     if options.verbose:
         sys.stdout.write("Parsing coverage data for file %s\n" % fname)
     #
@@ -510,8 +559,7 @@ def process_gcov_data(data_fname, covdata, options):
                 )
             return
     #
-    # Parse each line, and record the lines
-    # that are uncovered
+    # Parse each line, and record the lines that are uncovered
     #
     excluding = []
     noncode = set()
@@ -572,12 +620,14 @@ def process_gcov_data(data_fname, covdata, options):
             is_code_statement = True
             code = segments[2].strip()
             # remember certain non-executed lines
-            if excluding or len(code) == 0 or code == "{" or code == "}" or \
-                    code.startswith("//") or code == 'else':
+            if excluding or is_non_code(segments[2]):
                 noncode.add(lineno)
         elif tmp[0] == '#':
             is_code_statement = True
-            uncovered.add(lineno)
+            if is_non_code(segments[2]):
+                noncode.add( lineno )
+            else:
+                uncovered.add( lineno )
         elif tmp[0] == '=':
             is_code_statement = True
             uncovered_exceptional.add(lineno)
@@ -649,10 +699,11 @@ def process_gcov_data(data_fname, covdata, options):
         if excluding and not excluding[-1]:
             excluding.pop()
 
-    ##print 'uncovered',uncovered
-    ##print 'covered',covered
-    ##print 'branches',branches
-    ##print 'noncode',noncode
+    if options.verbose:
+        print('uncovered '+str(uncovered))
+        print('covered '+str(covered))
+        print('branches '+str(branches))
+        print('noncode '+str(noncode))
     #
     # If the file is already in covdata, then we
     # remove lines that are covered here.  Otherwise,
@@ -673,7 +724,6 @@ def process_gcov_data(data_fname, covdata, options):
                          "%s_EXCL_START\n\ton line %d did not have "
                          "corresponding %s_EXCL_STOP flag\n\t in file %s.\n"
                          % (header, line, header, fname))
-
 
 #
 # Process a datafile (generated by running the instrumented application)
@@ -701,14 +751,13 @@ def process_gcov_data(data_fname, covdata, options):
 # trial-and-error here)
 #
 def process_datafile(filename, covdata, options):
-    #print ""
-    #print "PROCESS",filename
+    if options.verbose:
+        print("Processing file: "+filename)
     #
     # Launch gcov
     #
     abs_filename = os.path.abspath(filename)
     dirname, fname = os.path.split(abs_filename)
-    #(name,ext) = os.path.splitext(base)
 
     potential_wd = []
     errors = []
@@ -760,8 +809,6 @@ def process_datafile(filename, covdata, options):
                 errors.append("ERROR: cannot identify the location where GCC "
                               "was run using --object-directory=%s\n" %
                               options.objdir)
-            # Revert to the normal
-            #sys.exit(1)
 
     # no objdir was specified (or it was a parent dir); walk up the dir tree
     if len(potential_wd) == 0:
@@ -776,25 +823,24 @@ def process_datafile(filename, covdata, options):
                 # Stop at the root of the file system
                 #
                 break
-
-    if options.use_llvm:
-        cmd = [
-                "llvm-cov", "gcov", abs_filename,
-                "--branch-counts", "--branch-probabilities", "--preserve-paths",
-                '--object-directory', dirname
-                ]
     else:
-        cmd = [
-                options.gcov_cmd, abs_filename,
-                "--relative-only", "--branch-counts", "--branch-probabilities", "--preserve-paths",
-                '--object-directory', dirname
-                ]
+        # Always add the root directory
+        potential_wd.append(root_dir)
+
+    #
+    # If the first element of cmd - the executable name - has embedded spaces it probably
+    # includes extra arguments.
+    #
+    cmd = options.gcov_cmd.split(' ') + [
+        abs_filename,
+        "--branch-counts", "--branch-probabilities", "--preserve-paths",
+        '--object-directory', dirname
+    ]
 
     # NB: Currently, we will only parse English output
     env = dict(os.environ)
     env['LC_ALL'] = 'en_US'
 
-    #print "HERE", potential_wd
     while len(potential_wd) > 0 and not Done:
         # NB: either len(potential_wd) == 1, or all entires are absolute
         # paths, so we don't have to chdir(starting_dir) at every
@@ -854,7 +900,7 @@ def process_datafile(filename, covdata, options):
             # Process *.gcov files
             #
             for fname in gcov_files['active']:
-                process_gcov_data(fname, covdata, options)
+                process_gcov_data(fname, covdata, abs_filename, options)
             Done = True
 
         if not options.keep:
@@ -882,26 +928,36 @@ def process_datafile(filename, covdata, options):
 #  Process Already existing gcov files
 #
 def process_existing_gcov_file(filename, covdata, options):
+    #
+    # Ignore this file if it does not match the gcov filter
+    #
     if not options.gcov_filter.match(filename):
         if options.verbose:
-            sys.stdout.write("Filtering gcov file %s\n" % filename)
+            sys.stdout.write("This gcov file does not match the filter: %s\n" % filename)
         return
-
+    #
+    # Ignore this file if it matches one of the exclusion regex's
+    #
     for exc in options.gcov_exclude:
         if exc.match(options.gcov_filter.sub('', filename)) or \
                 exc.match(filename) or \
                 exc.match(os.path.abspath(filename)):
             if options.verbose:
-                sys.stdout.write("Excluding gcov file %s\n" % filename)
+                sys.stdout.write("Excluding gcov file: %s\n" % filename)
             return
-
-    process_gcov_data(filename, covdata, options)
-
+    #
+    # Process the gcov data file
+    #
+    process_gcov_data(filename, covdata, None, options)
+    #
+    # Remove the file unless the user has indicated that we keep gcov data files
+    #
     if not options.keep:
+        #
+        # Only remove files that actually exist.
+        #
         if os.path.exists(filename):
-            # Only remove files that actually exist.
             os.remove(filename)
-
 
 #
 # Produce the classic gcovr text report
@@ -1203,10 +1259,22 @@ css = Template('''
         background-color: ${uncovered_color}!important;
     }
 
-    .linecount
+    .linebranch, .linecount
     {
         border-right: 1px gray solid;
         background-color: lightgray;
+    }
+
+    span.takenBranch
+    {
+        color: ${takenBranch_color}!important;
+        cursor: help;
+    }
+
+    span.notTakenBranch
+    {
+        color: ${notTakenBranch_color}!important;
+        cursor: help;
     }
 
     .src
@@ -1214,7 +1282,9 @@ css = Template('''
         padding-left: 12px;
     }
 
-    .srcHeader
+    .srcHeader,
+    span.takenBranch,
+    span.notTakenBranch
     {
         font-family: monospace;
         font-weight: bold;
@@ -1241,7 +1311,7 @@ root_page = Template('''
 <html>
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=${ENC}"/>
   <title>${HEAD}</title>
   <style media="screen" type="text/css">
   ${CSS}
@@ -1342,7 +1412,7 @@ source_page = Template('''
 <html>
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=${ENC}"/>
   <title>${HEAD}</title>
   <style media="screen" type="text/css">
   ${CSS}
@@ -1396,7 +1466,8 @@ source_page = Template('''
   <table cellspacing="0" cellpadding="1">
     <tr>
       <td width="5%" align="right" class="srcHeader">Line</td>
-      <td width="10%" align="right" class="srcHeader">Exec</td>
+      <td width="5%" align="right" class="srcHeader">Branch</td>
+      <td width="5%" align="right" class="srcHeader">Exec</td>
       <td width="75%" align="left" class="srcHeader src">Source</td>
     </tr>
 
@@ -1456,14 +1527,15 @@ def print_html_report(covdata, details):
     data['TIME'] = str(int(time.time()))
     data['DATE'] = datetime.date.today().isoformat()
     data['ROWS'] = []
+    data['ENC'] = options.html_encoding
     data['low_color'] = low_color
     data['medium_color'] = medium_color
     data['high_color'] = high_color
     data['COVERAGE_MED'] = medium_coverage
     data['COVERAGE_HIGH'] = high_coverage
-    data['CSS'] = css.substitute(
-        low_color=low_color, medium_color=medium_color, high_color=high_color,
-        covered_color=covered_color, uncovered_color=uncovered_color
+    data['CSS'] = css.substitute(low_color=low_color, medium_color=medium_color, high_color=high_color,
+                                 covered_color=covered_color, uncovered_color=uncovered_color,
+                                 takenBranch_color=takenBranch_color, notTakenBranch_color=notTakenBranch_color
     )
     data['DIRECTORY'] = ''
 
@@ -1491,11 +1563,12 @@ def print_html_report(covdata, details):
     data['LINES_TOTAL'] = str(lineTotal)
     coverage = calculate_coverage(lineCovered, lineTotal)
     data['LINES_COVERAGE'] = str(coverage)
-    data['LINES_COLOR'] = coverage_to_color(coverage_to_color)
+    data['LINES_COLOR'] = coverage_to_color(coverage)
 
     # Generate the coverage output (on a per-package basis)
     #source_dirs = set()
     files = []
+    dirs = []
     filtered_fname = ''
     keys = list(covdata.keys())
     keys.sort(
@@ -1506,16 +1579,27 @@ def print_html_report(covdata, details):
         cdata = covdata[f]
         filtered_fname = options.root_filter.sub('', f)
         files.append(filtered_fname)
+        dirs.append(os.path.dirname(filtered_fname) + os.sep)
         cdata._filename = filtered_fname
         ttmp = os.path.abspath(options.output).split('.')
-        if len(ttmp) > 1:
-            cdata._sourcefile = \
-                '.'.join(ttmp[:-1]) + \
-                '.' + cdata._filename.replace('/', '_').replace('\\', '_') + \
-                '.' + ttmp[-1]
-        else:
-            cdata._sourcefile = \
-                ttmp[0] + '.' + cdata._filename.replace('/', '_').replace('\\', '_') + '.html'
+        longname = cdata._filename.replace(os.sep, '_')
+        longname_hash = ""
+        while True:
+            if len(ttmp) > 1:
+                cdata._sourcefile = \
+                    '.'.join(ttmp[:-1]) + \
+                    '.' + longname + longname_hash + \
+                    '.' + ttmp[-1]
+            else:
+                cdata._sourcefile = \
+                    ttmp[0] + '.' + longname + longname_hash + '.html'
+            # we add a hash at the end and attempt to shorten the
+            # filename if it exceeds common filesystem limitations
+            if len(os.path.basename(cdata._sourcefile)) < 256:
+                break
+            longname_hash = "_" + hex(zlib.crc32(longname) & 0xffffffff)[2:]
+            longname = longname[(len(cdata._sourcefile) - len(longname_hash)):]
+
     # Define the common root directory, which may differ from options.root
     # when source files share a common prefix.
     if len(files) > 1:
@@ -1533,7 +1617,7 @@ def print_html_report(covdata, details):
         class_hits = 0
         class_branches = 0
         class_branch_hits = 0
-        for line in cdata.all_lines:
+        for line in sorted(cdata.all_lines):
             hits = cdata.covered.get(line, 0)
             class_lines += 1
             if hits > 0:
@@ -1633,6 +1717,7 @@ def source_row(lineno, source, cdata):
     rowstr = Template('''
     <tr>
     <td align="right" class="lineno"><pre>${lineno}</pre></td>
+    <td align="right" class="linebranch">${linebranch}</td>
     <td align="right" class="linecount ${covclass}"><pre>${linecount}</pre></td>
     <td align="left" class="src ${covclass}"><pre>${source}</pre></td>
     </tr>''')
@@ -1640,12 +1725,28 @@ def source_row(lineno, source, cdata):
     kwargs['lineno'] = str(lineno)
     if lineno in cdata.covered:
         kwargs['covclass'] = 'coveredLine'
+        kwargs['linebranch'] = ''
+        # If line has branches them show them with ticks or crosses
+        if lineno in cdata.branches.keys():
+            branches = cdata.branches.get(lineno)
+            branchcounter = 0
+            for branch in branches:
+                if branches[branch] > 0:
+                    kwargs['linebranch'] += '<span class="takenBranch" title="Branch ' + str(branch) + ' taken ' + str(branches[branch]) + ' times">&check;</span>'
+                else:
+                    kwargs['linebranch'] += '<span class="notTakenBranch" title="Branch ' + str(branch) + ' not taken">&cross;</span>'
+                branchcounter += 1
+                # Wrap at 4 branches to avoid too wide column
+                if (branchcounter > 0) and ((branchcounter % 4) == 0):
+                    kwargs['linebranch'] += '<br/>'
         kwargs['linecount'] = str(cdata.covered.get(lineno, 0))
     elif lineno in cdata.uncovered:
         kwargs['covclass'] = 'uncoveredLine'
+        kwargs['linebranch'] = ''
         kwargs['linecount'] = ''
     else:
         kwargs['covclass'] = ''
+        kwargs['linebranch'] = ''
         kwargs['linecount'] = ''
     kwargs['source'] = html.escape(source)
     return rowstr.substitute(**kwargs)
@@ -1799,7 +1900,7 @@ def print_xml_report(covdata):
         class_hits = 0
         class_branches = 0
         class_branch_hits = 0
-        for line in data.all_lines:
+        for line in sorted(data.all_lines):
             hits = data.covered.get(line, 0)
             class_lines += 1
             if hits > 0:
@@ -2020,7 +2121,7 @@ parser.add_option(
          "the output.",
     action="store",
     dest="root",
-    default=None
+    default='.'
 )
 parser.add_option(
     "-x", "--xml",
@@ -2058,6 +2159,13 @@ parser.add_option(
     default=True
 )
 parser.add_option(
+    '--html-encoding',
+    help='HTML file encoding (default: UTF-8).',
+    action='store',
+    dest='html_encoding',
+    default='UTF-8'
+)
+parser.add_option(
     "-b", "--branches",
     help="Tabulate the branch coverage instead of the line coverage.",
     action="store_true",
@@ -2087,13 +2195,6 @@ parser.add_option(
     default=os.environ.get('GCOV', 'gcov')
 )
 parser.add_option(
-    "-l", "--use-llvm-cov",
-    help="Use \"llvm-cov gcov\" instead of gcov",
-    action="store_true",
-    dest="use_llvm",
-    default=False
-)
-parser.add_option(
     "--exclude-unreachable-branches",
     help="Exclude from coverage branches which are marked to be excluded by "
          "LCOV/GCOV markers or are determined to be from lines containing "
@@ -2101,6 +2202,13 @@ parser.add_option(
     action="store_true",
     dest="exclude_unreachable_branches",
     default=False
+)
+parser.add_option(
+    "--exclude-directories",
+    help="Exclude directories from search path that match this regular expression",
+    action="append",
+    dest="exclude_dirs",
+    default=[]
 )
 parser.add_option(
     "-g", "--use-gcov-files",
@@ -2125,6 +2233,7 @@ parser.description = \
 # Process options
 #
 options, args = parser.parse_args(args=sys.argv)
+
 if options.version:
     sys.stdout.write(
         "gcovr %s\n"
@@ -2135,7 +2244,19 @@ if options.version:
         % (version_str(), )
     )
     sys.exit(0)
-if options.objdir:
+
+if options.output is not None:
+    options.output = os.path.abspath(options.output)
+
+if options.objdir is not None:
+    if not options.objdir:
+        sys.stderr.write(
+            "(ERROR) empty --object-directory option.\n"
+            "\tThis option specifies the path to the object file "
+            "directory of your project.\n"
+            "\tThis option cannot be an empty string.\n"
+        )
+        sys.exit(1)
     tmp = options.objdir.replace('/', os.sep).replace('\\', os.sep)
     while os.sep + os.sep in tmp:
         tmp = tmp.replace(os.sep + os.sep, os.sep)
@@ -2149,11 +2270,6 @@ if options.objdir:
             "(ERROR) Bad --object-directory option.\n"
             "\tThe specified directory does not exist.\n")
         sys.exit(1)
-#
-# Setup filters
-#
-for i in range(0, len(options.exclude)):
-    options.exclude[i] = re.compile(options.exclude[i])
 
 if options.root is not None:
     if not options.root:
@@ -2165,20 +2281,29 @@ if options.root is not None:
         )
         sys.exit(1)
     root_dir = os.path.abspath(options.root)
-    options.root_filter = re.compile(re.escape(root_dir + os.sep))
 else:
     root_dir = starting_dir
-    options.root_filter = re.compile(re.escape(root_dir + os.sep))
 
+#
+# Setup filters
+#
+for i in range(0, len(options.exclude)):
+    options.exclude[i] = re.compile(os.path.realpath(options.exclude[i]))
+
+if options.exclude_dirs is not None:
+    for i in range(0, len(options.exclude_dirs)):
+        options.exclude_dirs[i] = re.compile(os.path.realpath(options.exclude_dirs[i]))
+
+options.root_filter = re.compile(re.escape(root_dir + os.sep))
 for i in range(0, len(options.filter)):
-    options.filter[i] = re.compile(options.filter[i])
+    options.filter[i] = re.compile(os.path.realpath(options.filter[i]))
 if len(options.filter) == 0:
     options.filter.append(options.root_filter)
 
 for i in range(0, len(options.gcov_exclude)):
-    options.gcov_exclude[i] = re.compile(options.gcov_exclude[i])
+    options.gcov_exclude[i] = re.compile(os.path.realpath(options.gcov_exclude[i]))
 if options.gcov_filter is not None:
-    options.gcov_filter = re.compile(options.gcov_filter)
+    options.gcov_filter = re.compile(os.path.realpath(options.gcov_filter))
 else:
     options.gcov_filter = re.compile('')
 #
@@ -2186,9 +2311,14 @@ else:
 #
 if len(args) == 1:
     if options.root is None:
-        datafiles = get_datafiles(["."], options)
+        search_paths = ["."]
     else:
-        datafiles = get_datafiles([options.root], options)
+        search_paths = [options.root]
+
+    if options.objdir is not None:
+        search_paths.append(options.objdir)
+
+    datafiles = get_datafiles(search_paths, options)
 else:
     datafiles = get_datafiles(args[1:], options)
 #
