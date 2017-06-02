@@ -51,10 +51,10 @@ if(${ENABLE_GCOV})
 			COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
 			--exclude ".*/Catch.hpp" --exclude=".*/test/"
 			--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
-			#COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
-			#--exclude ".*/Catch.hpp" --exclude ".*/test/"
-			#--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
-			#--html --html-details --output coverage/index.html
+			COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
+			--exclude ".*/Catch.hpp" --exclude ".*/test/"
+			--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
+			--html --html-details --output coverage/index.html
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 	else(})
 		message(FATAL_ERROR "Can't find gcovr")
