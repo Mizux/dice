@@ -73,7 +73,7 @@ if(${ENABLE_GCOV})
 			--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
 			--html --html-details --output coverage/index.html
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-	else(})
+	else()
 		message(FATAL_ERROR "Can't find gcovr")
 	endif()
 endif()
