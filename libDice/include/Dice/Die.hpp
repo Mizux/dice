@@ -83,7 +83,7 @@ class Die {
 	//! @return For each Face its count.
 	FaceDistribution getFaceDistribution() const;
 
-	//! @brief A map, for each Face, its frequency.
+	//! @brief A map: [Face, frequency].
 	using Stat = std::map<Face, double>;
 	//! @brief Compute Face stats of the Die.
 	//! @details If a Die has several time the same Face

@@ -37,22 +37,23 @@ class Dice {
 	//! @brief Default Copy Ctor.
 	Dice(const Dice&) = default;
 	//! @brief Default Copy Operator.
-  //! @return This Dice instance.
+	//! @return This Dice instance.
 	Dice& operator=(const Dice&) = default;
 	//! @brief Default Move Ctor.
 	Dice(Dice&&) = default;
 	//! @brief Default Move Operator.
-  //! @return This Dice instance.
+	//! @return This Dice instance.
 	Dice& operator=(Dice&&) = default;
 
 	//! @brief Build a Dice from a list of Die.
-  //! @param[in] dice The list of Dice.
+	//! @param[in] dice The list of Dice.
 	Dice(std::initializer_list<Die> dice);
 	//! @brief Build a Dice from a list of @a n Elements.
 	//! @details Each element is a copy of val.
 	//! @param[in] size Number of element.
 	//! @param[in] val Value to fill the container with.
-	//! Each of the n elements in the container will be initialized to a copy of this value.
+	//! Each of the n elements in the container will be initialized to a copy of
+	//! this value.
 	Dice(std::size_t size, const Die& val);
 
 	/*! @brief Get access to a single element.
@@ -78,7 +79,7 @@ class Dice {
 	//! @param[in] face The Face to append.
 	void push_back(const Face& face);
 
-	//! @brief A map, for each Face tuple, its frequency.
+	//! @brief A map: [Face tuple, frequency].
 	using Stat = std::map<FaceTuple, double>;
 	//! @brief Compute Face Tuple stats of the Dice.
 	//! @details Face are sorted in lexicagraphical order and results merged
@@ -93,9 +94,9 @@ class Dice {
 	std::size_t rollNumber() const;
 
 	//! @brief Fill an output stream with a Dice.
-  //! @param[out] stream Thhe output stream to fill.
-  //! @param[in] dice The dice to write down.
-  //! @return The output stream.
+	//! @param[out] stream Thhe output stream to fill.
+	//! @param[in] dice The dice to write down.
+	//! @return The output stream.
 	friend std::ostream& operator<<(std::ostream& stream, const Dice& dice) {
 		stream << "{";
 		for (auto it = dice.begin(); it != dice.end();) {
@@ -106,10 +107,9 @@ class Dice {
 		return stream;
 	}
 
-protected:
+	protected:
 	//! @brief Store the list of Die of the Dice pool.
 	//! @note A Dice could use several time the same Die or not.
 	std::vector<Die> _dice;
-
 };
 }

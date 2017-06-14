@@ -60,57 +60,67 @@ TEST_CASE("Stat::Binomial", "[Stat]") {
 }
 /*
 TEST_CASE("Stat::getTupleStat", "[Stat]") {
-	SECTION("Heads or Tails") {
-		Die die = {Face::HEADS(), Face::TAILS()};
+        SECTION("Heads or Tails") {
+                Die die = {Face::HEADS(), Face::TAILS()};
 
-		TupleStat stat = getTupleStat(5, die, {Face::HEADS(), Face::HEADS()});
-		REQUIRE(stat.size() == 3);
-		INFO("0: " << stat[0] << " 1: " << stat[1] << " 2: " << stat[2]);
-		CHECK(std::accumulate(
-		        stat.begin(), stat.end(), 0., [](double lhs, std::pair<int, double> rhs) {
-			        return lhs + rhs.second;
-			      }) == 1.0);
-		CHECK(stat[0] == 0.1875);
-		CHECK(stat[1] == 0.625);
-		CHECK(stat[2] == 0.1875);
-	}
-	SECTION("6D6, {1,2}") {
-		TupleStat stat = getTupleStat(6, Die::D6(), {Face::ONE(), Face::TWO()});
-		CHECK(stat.size() == 4);
-		INFO(
-		  "0: " << stat[0] << " 1: " << stat[1] << " 2: " << stat[2] << " 3: " << stat[3]);
-		double sum = std::accumulate(
-		  stat.begin(), stat.end(), 0., [](double lhs, std::pair<int, double> rhs) {
-			  return lhs + rhs.second;
-			});
-		CHECK(std::abs(sum - 1.0) < 0.00001);
-	}
+                TupleStat stat = getTupleStat(5, die, {Face::HEADS(),
+Face::HEADS()});
+                REQUIRE(stat.size() == 3);
+                INFO("0: " << stat[0] << " 1: " << stat[1] << " 2: " <<
+stat[2]);
+                CHECK(std::accumulate(
+                        stat.begin(), stat.end(), 0., [](double lhs,
+std::pair<int, double> rhs) {
+                                return lhs + rhs.second;
+                              }) == 1.0);
+                CHECK(stat[0] == 0.1875);
+                CHECK(stat[1] == 0.625);
+                CHECK(stat[2] == 0.1875);
+        }
+        SECTION("6D6, {1,2}") {
+                TupleStat stat = getTupleStat(6, Die::D6(), {Face::ONE(),
+Face::TWO()});
+                CHECK(stat.size() == 4);
+                INFO(
+                  "0: " << stat[0] << " 1: " << stat[1] << " 2: " << stat[2] <<
+" 3: " << stat[3]);
+                double sum = std::accumulate(
+                  stat.begin(), stat.end(), 0., [](double lhs, std::pair<int,
+double> rhs) {
+                          return lhs + rhs.second;
+                        });
+                CHECK(std::abs(sum - 1.0) < 0.00001);
+        }
 }
 */
 /*
 TEST_CASE("Stat::4D6", "[Stat]") {
-	Dice fourD6(4, Die::D6());
-	TupleCount fourCount = fourD6.getTupleCount({Face::ONE(), Face::TWO()});
-	INFO("4D6, 2*{1,2}: " << fourCount[2]);
-	INFO("Calculated: " << factorial(4) / (factorial(2) * factorial(2)));
+        Dice fourD6(4, Die::D6());
+        TupleCount fourCount = fourD6.getTupleCount({Face::ONE(), Face::TWO()});
+        INFO("4D6, 2*{1,2}: " << fourCount[2]);
+        INFO("Calculated: " << factorial(4) / (factorial(2) * factorial(2)));
 
-	Dice sixD6(6, Die::D6());
-	TupleCount sixCount = sixD6.getTupleCount({Face::ONE(), Face::TWO()});
-	INFO("6D6, 1*{1,2}: " << sixCount[1]);
-	INFO("6D6, 2*{1,2}: " << sixCount[2]);
-	INFO("6D6, 3*{1,2}: " << sixCount[3]);
-	INFO("Calculated: " << (factorial(4) /
-	                        (factorial(2) * factorial(2))) * // permutation {AABB} = 6
-	                           binomial(6, 4) *
-	                           std::pow(5, 6 - 4) -
-	                         6 * binomial(6, 4) - 6 * binomial(6, 4) * 6 * 2);
+        Dice sixD6(6, Die::D6());
+        TupleCount sixCount = sixD6.getTupleCount({Face::ONE(), Face::TWO()});
+        INFO("6D6, 1*{1,2}: " << sixCount[1]);
+        INFO("6D6, 2*{1,2}: " << sixCount[2]);
+        INFO("6D6, 3*{1,2}: " << sixCount[3]);
+        INFO("Calculated: " << (factorial(4) /
+                                (factorial(2) * factorial(2))) * // permutation
+{AABB} = 6
+                                   binomial(6, 4) *
+                                   std::pow(5, 6 - 4) -
+                                 6 * binomial(6, 4) - 6 * binomial(6, 4) * 6 *
+2);
 
-	Dice threeD3(3, {Face::ONE(), Face::TWO(), Face::THREE()});
-	TupleCount threeCount = threeD3.getTupleCount({Face::ONE(), Face::TWO()});
-	INFO("3D3, 1*{1,2}: " << threeCount[1]);
-	INFO("Calculated: " << 2 * binomial(3, 2) * std::pow(6, 1) - 2 * binomial(3, 2));
+        Dice threeD3(3, {Face::ONE(), Face::TWO(), Face::THREE()});
+        TupleCount threeCount = threeD3.getTupleCount({Face::ONE(),
+Face::TWO()});
+        INFO("3D3, 1*{1,2}: " << threeCount[1]);
+        INFO("Calculated: " << 2 * binomial(3, 2) * std::pow(6, 1) - 2 *
+binomial(3, 2));
 
-	CHECK(false);
+        CHECK(false);
 }
 */
 /*TEST_CASE("Stat::calculateTupleCount", "[Stat]") {

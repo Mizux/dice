@@ -36,7 +36,8 @@ class Face {
 	bool operator!=(const Face& rhs) const;
 	//! @brief Compares the contents of this instance and rhs lexicographically.
 	//! @param[in] rhs The second Face to compare with.
-	//! @return True if this instance is lexicographically less than rhs, false otherwise.
+	//! @return True if this instance is lexicographically less than rhs, false
+	//! otherwise.
 	bool operator<(const Face& rhs) const;
 
 	//! @brief Return the value
@@ -87,7 +88,7 @@ class Face {
 	//! @return A Face object.
 	static const Face TAIL();
 
-  protected:
+	protected:
 	//! @brief Stores the value of the face.
 	std::string _value;
 };

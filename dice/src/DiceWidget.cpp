@@ -47,16 +47,21 @@ DiceWidget::calculateStat() {
 
 		// 2) Display results
 		/*
-		for (std::size_t tupleNumber = 0; tupleNumber < stat.size(); ++tupleNumber) {
-			_result->insertRow(0);
-			_result->setItem(0, 0, new QTableWidgetItem(QString::number(diceNumber)));
-			_result->setItem(0, 1, new QTableWidgetItem(QString::number(tupleNumber)));
-			_result->setItem(0, 2, new QTableWidgetItem(QString::number(stat[tupleNumber])));
-			double accumulation = 0;
-			for (std::size_t i = tupleNumber; i < stat.size(); ++i) {
-				accumulation += stat[i];
-			}
-			_result->setItem(0, 3, new QTableWidgetItem(QString::number(accumulation)));
+		for (std::size_t tupleNumber = 0; tupleNumber < stat.size(); ++tupleNumber)
+		{
+		        _result->insertRow(0);
+		        _result->setItem(0, 0, new
+		QTableWidgetItem(QString::number(diceNumber)));
+		        _result->setItem(0, 1, new
+		QTableWidgetItem(QString::number(tupleNumber)));
+		        _result->setItem(0, 2, new
+		QTableWidgetItem(QString::number(stat[tupleNumber])));
+		        double accumulation = 0;
+		        for (std::size_t i = tupleNumber; i < stat.size(); ++i) {
+		                accumulation += stat[i];
+		        }
+		        _result->setItem(0, 3, new
+		QTableWidgetItem(QString::number(accumulation)));
 		}
 		*/
 	}
@@ -178,8 +183,7 @@ DiceWidget::_setupWidget() {
 		_calculateButton = new QPushButton("Calculate", this);
 		layout()->addWidget(_calculateButton);
 		// layout()->setAlignment(_calculateButton, Qt::AlignCenter);
-		connect(
-		  _calculateButton, &QPushButton::clicked, this, &DiceWidget::calculateStat);
+		connect(_calculateButton, &QPushButton::clicked, this, &DiceWidget::calculateStat);
 	}
 	{ // Result Widget
 		QHBoxLayout* box = new QHBoxLayout();

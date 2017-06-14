@@ -55,8 +55,6 @@ TEST_CASE("Roll::findTuple", "[Roll]") {
 }
 
 TEST_CASE("Roll::operator<<", "[Roll]") {
-	SECTION("Debug print") {
-		INFO("Roll: " << Roll(2, Die::D6()));
-	}
+	SECTION("Debug print") { INFO("Roll: " << Roll(2, Die::D6())); }
 }
 }

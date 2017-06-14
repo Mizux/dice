@@ -7,8 +7,8 @@
 #include <QTableWidget>
 #include <QWidget>
 
-#include <Dice/Die.hpp>
 #include <Dice/Dice.hpp>
+#include <Dice/Die.hpp>
 
 class DiceWidget : public QWidget {
 	Q_OBJECT

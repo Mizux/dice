@@ -24,12 +24,12 @@ binomial(double n, double k) {
 /*
 TupleStat
 getTupleStat(std::size_t diceNumber, const Die& die, const Tuple& tuple) {
-	return Dice(diceNumber, die).getTupleStat(tuple);
+        return Dice(diceNumber, die).getTupleStat(tuple);
 }
 
 TupleCount
 getTupleCount(std::size_t diceNumber, const Die& die, const Tuple& tuple) {
-	return Dice(diceNumber, die).getTupleCount(tuple);
+        return Dice(diceNumber, die).getTupleCount(tuple);
 }
 */
 std::size_t

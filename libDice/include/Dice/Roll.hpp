@@ -9,15 +9,15 @@ namespace Dice {
 //! @brief A Roll is a combinaison of Face from a pool of Die.
 class Roll {
 	public:
-	Roll()            = default;
-	~Roll()           = default;
+	Roll()  = default;
+	~Roll() = default;
 	//! @brief Constructs a Roll with the copy of the content of other.
 	Roll(const Roll&) = default;
 	//! @brief Replaces the contents with a copy of the contents of other.
 	//! @return *this.
 	Roll& operator=(const Roll&) = default;
 	//! @brief Constructs a Roll with the contents of other using move semantics.
-	Roll(Roll&&)                 = default;
+	Roll(Roll&&) = default;
 	//! @brief Replaces the contents with those of other using move semantics.
 	//! @return *this.
 	Roll& operator=(Roll&&) = default;
@@ -43,7 +43,7 @@ class Roll {
 	//! @return Number of time Tuple is present.
 	int findTuple(const Tuple& tuple);
 
-  private:
+	private:
 	//! @brief The pool of Die.
 	Dice _dice;
 	//! @brief The list of Face currently selectionned (one for each Die).
