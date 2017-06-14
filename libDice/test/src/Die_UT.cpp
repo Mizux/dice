@@ -84,6 +84,14 @@ TEST_CASE("Die Accessors", "[Die]") {
 	}
 }
 
+TEST_CASE("Die::addFace", "[Die]") {
+	Die die;
+	CHECK(die.size() == 0);
+	die.push_back(Face::ONE());
+	CHECK(die.size() == 1);
+	CHECK(die.countFace(Face::ONE()) == 1);
+}
+
 TEST_CASE("Die::countFace", "[Die]") {
 	SECTION("d3") {
 		Die d3 = {Face::ONE(), Face::ONE(), Face::THREE()};
