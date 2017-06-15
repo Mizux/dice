@@ -6,8 +6,10 @@
 #include <QLabel>
 #include <QSpacerItem>
 #include <QVBoxLayout>
+#include <QDebug>
 #include <cassert>
 #include <iostream>
+#include <sstream>
 #include <numeric>
 
 #include <Dice/Roll.hpp>
@@ -19,6 +21,24 @@ DiceWidget::DiceWidget(QWidget* parent)
 }
 
 DiceWidget::~DiceWidget() {}
+
+QDebug& operator<<(QDebug& out, const Dice::Die& die) {
+	std::stringstream ss;
+  ss << die;
+  return out << QString::fromStdString(ss.str());
+}
+
+QDebug& operator<<(QDebug& out, const Dice::Dice& dice) {
+	std::stringstream ss;
+  ss << dice;
+  return out << QString::fromStdString(ss.str());
+}
+
+QDebug& operator<<(QDebug& out, const Dice::FaceTuple& tuple) {
+	std::stringstream ss;
+  ss << tuple;
+  return out << QString::fromStdString(ss.str());
+}
 
 void
 DiceWidget::calculateStat() {
@@ -34,16 +54,19 @@ DiceWidget::calculateStat() {
 		_result->setHorizontalHeaderLabels(headers);
 	}
 
-	// For each number of die possible.
+	const Dice::Die die = getDie();
+	qDebug() << "Die: " << die;
+	const Dice::FaceTuple tuple = getTuple();
+	qDebug() << "Tuple: " << tuple;
+
+	// For each possible dice.
 	for (std::size_t diceNumber = std::size_t(_diceNumberMin->value());
 	     diceNumber <= std::size_t(_diceNumberMax->value());
 	     ++diceNumber) {
-		Dice::Die die = getDie();
-		// std::cerr << "Die: " << die << std::endl;
-		Dice::FaceTuple tuple = getTuple();
-		// std::cerr << "Tuple: " << tuple << std::endl;
 		Dice::Dice dice(diceNumber, die);
-		// TupleStat stat = dice.getTupleStat(tuple);
+    qDebug() << "Die number: " << dice.size();
+
+    // TupleStat stat = dice.getTupleStat(tuple);
 
 		// 2) Display results
 		/*
