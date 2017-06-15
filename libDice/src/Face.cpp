@@ -101,4 +101,15 @@ Face::create(int idx) {
 			throw std::runtime_error("not supported");
 	}
 }
+
+std::ostream& operator<<(std::ostream& stream, const FaceTuple& tuple) {
+	stream << "{";
+	for (auto it = tuple.begin(); it != tuple.end();) {
+		stream << *it;
+		if (++it != tuple.end()) stream << ", ";
+		}
+	stream << "}";
+	return stream;
+}
+
 }

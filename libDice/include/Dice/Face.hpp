@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include <vector>
+#include <set>
 
 namespace Dice {
 
@@ -92,4 +93,13 @@ class Face {
 	//! @brief Stores the value of the face.
 	std::string _value;
 };
+
+using FaceTuple = std::multiset<Face>;
+
+//! @brief Fill an output stream with a Dice.
+//! @param[out] stream Thhe output stream to fill.
+//! @param[in] dice The dice to write down.
+//! @return The output stream.
+std::ostream& operator<<(std::ostream& stream, const FaceTuple& tuple);
+
 }

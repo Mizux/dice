@@ -7,8 +7,6 @@
 #include <vector>
 
 namespace Dice {
-using FaceTuple = std::multiset<Face>;
-
 //! @brief Store a set of Die. (e.g. manage a pool of Die)
 class Dice {
 	public:
@@ -81,7 +79,7 @@ class Dice {
 
 	//! @brief A map: [Face tuple, frequency].
 	using Stat = std::map<FaceTuple, double>;
-	//! @brief Compute Face Tuple stats of the Dice.
+	//! @brief Compute All Tuple combinaison and their frequency.
 	//! @details Face are sorted in lexicagraphical order and results merged
 	//! (i.e. Die order doesn't matter).
 	//! Example: If a Dice has two identical Die whose Face are {1,1,2},
