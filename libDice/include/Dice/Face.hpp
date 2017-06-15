@@ -41,7 +41,8 @@ class Face {
 	//! otherwise.
 	bool operator<(const Face& rhs) const;
 
-	//! @brief Return the value
+	//! @brief Returns the glyphe of the Face.
+	//! @return The glyphe of the Face.
 	std::string operator()() const;
 
 	//! @brief Overloads the insertion operator.
