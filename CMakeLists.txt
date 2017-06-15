@@ -44,7 +44,7 @@ endif()
 #############
 ##  GCOVR  ##
 #############
-option(ENABLE_GCOV "Compile with coverage option" ON)
+option(ENABLE_GCOV "Compile with coverage option" OFF)
 if(${ENABLE_GCOV})
 	if(CMAKE_COMPILER_IS_GNUCXX) # gcc / gcov
 		set(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
