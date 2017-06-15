@@ -2,6 +2,7 @@
 
 #include <Dice/Dice.hpp>
 #include <chrono>
+#include <iostream>
 #include <numeric>
 
 namespace Dice {
@@ -90,6 +91,29 @@ TEST_CASE("Dice Stat", "[Dice]") {
 		CHECK(stat[one_two] == 4 / 9.);
 		std::multiset<Face> two_two = {Face::TWO(), Face::TWO()};
 		CHECK(stat[two_two] == 1 / 9.);
+	}
+	SECTION("Stat 2d{1,1,2,3}") {
+		Die die({Face::ONE(), Face::ONE(), Face::TWO(), Face::THREE()});
+		CHECK(die.size() == 4);
+		Dice dice(2, die);
+		CHECK(dice.size() == 2);
+
+		auto stat = dice.getStat();
+		REQUIRE(stat.size() == 6);
+		CHECK(stat.find({Face::ONE(), Face::ONE()}) != stat.end());
+		CHECK(stat.find({Face::ONE(), Face::TWO()}) != stat.end());
+		CHECK(stat.find({Face::ONE(), Face::THREE()}) != stat.end());
+		CHECK(stat.find({Face::TWO(), Face::TWO()}) != stat.end());
+		CHECK(stat.find({Face::TWO(), Face::THREE()}) != stat.end());
+		CHECK(stat.find({Face::THREE(), Face::THREE()}) != stat.end());
+	}
+	SECTION("Stat 4d{1,1,2,3}") {
+		Die die({Face::ONE(), Face::ONE(), Face::TWO(), Face::THREE()});
+		CHECK(die.size() == 4);
+		Dice dice(4, die);
+		CHECK(dice.size() == 4);
+		std::cerr << "dice: " << dice << std::endl;
+		// std::cerr << "diceStat: " << dice.getStat() << std::endl;
 	}
 }
 

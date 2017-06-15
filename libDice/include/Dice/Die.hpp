@@ -31,7 +31,7 @@ class Die {
 	//! @brief Default Ctor.
 	Die() = default;
 	//! @brief Default Dtor.
-	~Die() = default;
+	virtual ~Die() = default;
 	//! @brief Default Copy Ctor.
 	Die(const Die&) = default;
 	//! @brief Default Copy Operator.
@@ -84,6 +84,11 @@ class Die {
 	FaceDistribution getFaceDistribution() const;
 
 	//! @brief A map: [Face, frequency].
+	/*
+	 * key_type	Key
+	 * mapped_type	T
+	 * value_type	std::pair<const Key, T>
+	 */
 	using Stat = std::map<Face, double>;
 	//! @brief Compute Face stats of the Die.
 	//! @details If a Die has several time the same Face
