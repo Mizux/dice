@@ -45,6 +45,9 @@ class Dice {
 
 	//! @brief Build a Dice from a list of Die.
 	//! @param[in] dice The list of Dice.
+	Dice(std::vector<Die> dice);
+	//! @brief Build a Dice from a list of Die.
+	//! @param[in] dice The list of Dice.
 	Dice(std::initializer_list<Die> dice);
 	//! @brief Build a Dice from a list of @a n Elements.
 	//! @details Each element is a copy of val.

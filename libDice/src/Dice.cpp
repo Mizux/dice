@@ -4,6 +4,9 @@
 
 namespace Dice {
 
+Dice::Dice(std::vector<Die> dice)
+  : _dice(std::move(dice)) {}
+
 Dice::Dice(std::initializer_list<Die> dice)
   : _dice(dice) {}
 

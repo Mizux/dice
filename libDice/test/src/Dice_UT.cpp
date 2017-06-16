@@ -12,7 +12,13 @@ TEST_CASE("Dice::Ctor", "[Dice]") {
 		Dice dice;
 		CHECK(dice.size() == 0);
 	}
-	SECTION("Initializer list") {
+	SECTION("Vector<Face>") {
+		std::vector<Die> dieVec = {Die::D6(), Die::D6(), Die::D6(), Die::D6()};
+		CHECK(dieVec.size() == 4);
+    Dice dice(dieVec);
+    CHECK(dice.size() == 4);
+	}
+	SECTION("Initializer_list") {
 		Dice dice = {Die::D6(), Die::D6(), Die::D6(), Die::D6()};
 		CHECK(dice.size() == 4);
 	}
