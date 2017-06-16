@@ -1,0 +1,16 @@
+digraph "General Overview"
+{
+  rankdir=BT;
+  bgcolor= transparent;
+
+  node[fontcolor=black, fontname="DejaVuSansMono", fontsize=8, height=0.25];
+  node[shape=record, style="filled", color="#A3B4D6", fillcolor="#E8ECF5"];
+  edge[color="#000090"];
+
+ DW[label="DiceWidget", URL="\ref DiceWidget"];
+
+ edge[style=""];
+ edge[arrowhead="diamond"]; // Composition
+
+ edge[arrowhead="odiamond"]; // Aggregation
+}

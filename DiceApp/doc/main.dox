@@ -1,0 +1,12 @@
+/*! @file
+* @author Mizux <dev@mizux.net>
+* @copyright Copyright (c) Mizux All Rights Reserveid
+*/
+
+/*! @mainpage DiceApp Application
+This is the Project documentation.
+@section DiceApp_main Introduction
+The documentation for the Project is split into the following sections:
+
+@li @ref DiceApp_arch
+**/

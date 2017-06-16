@@ -1,7 +1,3 @@
-cmake_minimum_required(VERSION 3.2)
-
-message(STATUS "Build dir: ${CMAKE_BINARY_DIR}")
-
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -9,11 +5,12 @@ if(DOXYGEN_FOUND)
     set(CMAKE_DOCUMENTATION_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc)
   endif()
 
-  file(GLOB _SRCS "*.dox" "*.dot")
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+
+  file(GLOB _SRCS "*.dox" "*.dot")
   file(MAKE_DIRECTORY "${CMAKE_DOCUMENTATION_OUTPUT_DIRECTORY}/${PROJECT_NAME}")
-	add_custom_target(${PROJECT_NAME}_doc
-		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+	add_custom_target(${PROJECT_NAME}_doc ALL
+		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile 1 > /dev/null
 		SOURCES Doxyfile.in ${_SRCS}
 		DEPENDS Dice_doc DiceApp_doc
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

@@ -1,0 +1,18 @@
+/*! @file
+* @author Mizux <dev@mizux.net>
+* @copyright Copyright (c) Mizux All Rights Reserved
+*/
+
+/*! @page DiceApp_arch Architecture Overview
+  The documentation for Architecture is split into the following sections:
+  <UL>
+  <LI> \ref DiceiApp_arch_sec_0
+  <LI> \ref DiceApp_arch_sec_1
+  </UL>
+  @section DiceApp_arch_sec_0 Specifications
+	Currently try to compute stats for a game like Eredan Arena.
+
+  @section DiceApp_arch_sec_1 Overview
+  General Overview of the class collaboration.
+  @dotfile overview.dot
+*/

@@ -3,7 +3,7 @@
 */
 
 /*! @mainpage Dice
-This is the Cross-Project documentation.
+This is the meta Cross-Project documentation.
 
 This repository contains several samples:
 @li @ref Dice_main "libDice"
