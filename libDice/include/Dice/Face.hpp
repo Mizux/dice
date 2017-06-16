@@ -95,12 +95,14 @@ class Face {
 	std::string _value;
 };
 
+//! @brief Container of a sorted sequence of Face.
 using FaceTuple = std::multiset<Face>;
 
-//! @brief Fill an output stream with a Dice.
-//! @param[out] stream Thhe output stream to fill.
-//! @param[in] dice The dice to write down.
+//! @brief Fill an output stream with a FaceTuple.
+//! @param[out] stream The output stream to fill.
+//! @param[in] tuple The sequence of Face to write down.
 //! @return The output stream.
 std::ostream& operator<<(std::ostream& stream, const FaceTuple& tuple);
+
 
 }

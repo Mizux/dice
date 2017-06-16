@@ -111,10 +111,14 @@ DiceWidget::setSideNumber(int size) {
 	}
 }
 
-// Qt don't like signal overload (e.g. QSpinBox::valueChanged(int) and
-// QSpinBox::valueChanged(string))
+//! @brief Helper to manage overload with connect new C++ like syntax.
+//! Qt don't like signal overload (e.g. QSpinBox::valueChanged(int) and
+//! QSpinBox::valueChanged(string))
 template <typename... Args>
 struct OVERLOAD {
+  //! @brief Retrieve an overload method at compile time.
+  //! @param PMF The method to retrieve.
+  //! @return A functor to the method.
 	template <typename C, typename R>
 	static constexpr auto of(R (C::*PMF)(Args...)) -> decltype(PMF) {
 		return PMF;
