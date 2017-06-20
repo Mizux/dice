@@ -102,14 +102,14 @@ Face::create(int idx) {
 	}
 }
 
-std::ostream& operator<<(std::ostream& stream, const FaceTuple& tuple) {
+std::ostream&
+operator<<(std::ostream& stream, const FaceTuple& tuple) {
 	stream << "{";
 	for (auto it = tuple.begin(); it != tuple.end();) {
 		stream << *it;
 		if (++it != tuple.end()) stream << ", ";
-		}
+	}
 	stream << "}";
 	return stream;
 }
-
 }

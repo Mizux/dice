@@ -2,8 +2,8 @@
 #pragma once
 
 #include <ostream>
-#include <vector>
 #include <set>
+#include <vector>
 
 namespace Dice {
 
@@ -103,6 +103,4 @@ using FaceTuple = std::multiset<Face>;
 //! @param[in] tuple The sequence of Face to write down.
 //! @return The output stream.
 std::ostream& operator<<(std::ostream& stream, const FaceTuple& tuple);
-
-
 }
