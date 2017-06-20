@@ -14,6 +14,6 @@ if(DOXYGEN_FOUND)
 		SOURCES Doxyfile.in ${_SRCS}
 		DEPENDS Dice_doc DiceApp_doc
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		COMMENT "Generating API documentation with Doxygen" VERBATIM
+		COMMENT "Generating meta doxygen documentation" VERBATIM
 		)
 endif()

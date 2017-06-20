@@ -13,6 +13,6 @@ if(DOXYGEN_FOUND)
 		COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile 1 > /dev/null
 		SOURCES Doxyfile.in ${_SRCS}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		COMMENT "Generating ${PROJECT_NAME} API documentation with Doxygen" VERBATIM
+		COMMENT "Generating ${PROJECT_NAME} API documentation" VERBATIM
 		)
 endif()

@@ -13,7 +13,15 @@ Dice::Dice(std::initializer_list<Die> dice)
 Dice::Dice(std::size_t size, const Die& val)
   : _dice(size, val) {}
 
-Dice::Stat operator*(Dice::Stat& diceStat, const Die::Stat& dieStat) {
+//! @brief Overload Dice::Stat::operator* to merge a DiceStat with a DieStat.
+//! @details This operator is usefull to build DiceStat recurssively by adding one Die
+//! at a time.
+//! i.e. Stat(3d6) == Stat(1d6) * Stat(1d6) * Stat(1d6).
+//! @param[in,out] diceStat The Stat of the Dice pool without taking into account the
+//! new Die.
+//! @param[in] dieStat The Stat of the new Die to add to the Dice pool.
+//! @return The QDebug reference.
+Dice::Stat operator*(const Dice::Stat& diceStat, const Die::Stat& dieStat) {
 	Dice::Stat result;
 	// if Dice Stat Empty simply recopy Die Stat in it.
 	if (diceStat.empty()) {

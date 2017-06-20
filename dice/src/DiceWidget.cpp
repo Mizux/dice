@@ -2,15 +2,15 @@
 
 #include "DiceWidget.hpp"
 
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSpacerItem>
 #include <QVBoxLayout>
-#include <QDebug>
 #include <cassert>
 #include <iostream>
-#include <sstream>
 #include <numeric>
+#include <sstream>
 
 #include <Dice/Roll.hpp>
 #include <Dice/Stat.hpp>
@@ -22,22 +22,37 @@ DiceWidget::DiceWidget(QWidget* parent)
 
 DiceWidget::~DiceWidget() {}
 
-QDebug& operator<<(QDebug& out, const Dice::Die& die) {
+//! @brief Overload QDebug::operator<< to display a Die.
+//! @param[out] out The QDebug to fill.
+//! @param[in] die The Die to print.
+//! @return The QDebug reference.
+QDebug&
+operator<<(QDebug& out, const Dice::Die& die) {
 	std::stringstream ss;
-  ss << die;
-  return out << QString::fromStdString(ss.str());
+	ss << die;
+	return out << QString::fromStdString(ss.str());
 }
 
-QDebug& operator<<(QDebug& out, const Dice::Dice& dice) {
+//! @brief Overload QDebug::operator<< to display a Dice.
+//! @param[out] out The QDebug to fill.
+//! @param[in] dice The Dice to print.
+//! @return The QDebug reference.
+QDebug&
+operator<<(QDebug& out, const Dice::Dice& dice) {
 	std::stringstream ss;
-  ss << dice;
-  return out << QString::fromStdString(ss.str());
+	ss << dice;
+	return out << QString::fromStdString(ss.str());
 }
 
-QDebug& operator<<(QDebug& out, const Dice::FaceTuple& tuple) {
+//! @brief Overload QDebug::operator<< to display a FaceTuple.
+//! @param[out] out The QDebug to fill.
+//! @param[in] tuple The FaceTuple to print.
+//! @return The QDebug reference.
+QDebug&
+operator<<(QDebug& out, const Dice::FaceTuple& tuple) {
 	std::stringstream ss;
-  ss << tuple;
-  return out << QString::fromStdString(ss.str());
+	ss << tuple;
+	return out << QString::fromStdString(ss.str());
 }
 
 void
@@ -64,9 +79,9 @@ DiceWidget::calculateStat() {
 	     diceNumber <= std::size_t(_diceNumberMax->value());
 	     ++diceNumber) {
 		Dice::Dice dice(diceNumber, die);
-    qDebug() << "Die number: " << dice.size();
+		qDebug() << "Die number: " << dice.size();
 
-    // TupleStat stat = dice.getTupleStat(tuple);
+		// TupleStat stat = dice.getTupleStat(tuple);
 
 		// 2) Display results
 		/*
@@ -116,9 +131,9 @@ DiceWidget::setSideNumber(int size) {
 //! QSpinBox::valueChanged(string))
 template <typename... Args>
 struct OVERLOAD {
-  //! @brief Retrieve an overload method at compile time.
-  //! @param PMF The method to retrieve.
-  //! @return A functor to the method.
+	//! @brief Retrieve an overload method at compile time.
+	//! @param PMF The method to retrieve.
+	//! @return A functor to the method.
 	template <typename C, typename R>
 	static constexpr auto of(R (C::*PMF)(Args...)) -> decltype(PMF) {
 		return PMF;
