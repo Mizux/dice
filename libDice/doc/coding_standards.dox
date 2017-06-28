@@ -18,18 +18,16 @@
   This section contains some general guidelines on arranging files.
 
   The source code is organize as folllow :
-  <UL>
-  <LI> @b /doc: Meta doxygen documentation files (i.e. .dox).
-  <LI> @b /include: Public header files (i.e. .hpp .hxx).
-  <LI> @b /src: Implementation files (i.e. .cpp, _p.cpp, _p.hpp).
-  <LI> @b /test: Unit test files.
-  <LI> @b /build: Build directory.
-	<UL>
-	<LI> @b /lib: Library generated files (i.e. .so).
-    <LI> @b /bin: Binary generated files.
-    <LI> @b /doc: Documentation generated files.
-    </UL>
-  </UL>
+  - @b doc: Meta doxygen documentation files (i.e. .dox).
+  - @b include: Public header files (i.e. .hpp .hxx).
+  - @b src: Implementation files (i.e. .cpp, _p.cpp, _p.hpp).
+  - @b test: Unit test files.
+  - @b build: Build directory.
+	  - @b usr/lib: Library generated files (i.e. .so).
+    - @b usr/bin: Binary generated files.
+    - @b sr/share/doc: Documentation generated files.
+  .
+  
   The implementation and public header files should appear in separate
 	directory.
 
