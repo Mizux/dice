@@ -1,3 +1,3 @@
 # add a target to generate API documentation with Doxygen
 include(doxygen)
-BUILD_DOXYGEN(${PROJECT_NAME})
+BUILD_DOC(${PROJECT_NAME})
