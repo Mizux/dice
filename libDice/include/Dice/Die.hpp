@@ -139,7 +139,7 @@ operator<<(std::ostream& stream, const Die::FaceDistribution& count) {
 }
 
 //! @brief Fill an output stream with a Die::Stat.
-//! @param[out] stream Thhe output stream to fill.
+//! @param[out] stream The output stream to fill.
 //! @param[in] stat The Die::Stat to write down.
 //! @return The output stream.
 inline std::ostream&

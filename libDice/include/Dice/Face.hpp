@@ -96,6 +96,9 @@ class Face {
 };
 
 //! @brief Container of a sorted sequence of Face.
+//! @note When computing Statistic keeping Face order is irelevant.
+//! e.g. For 3d6, the rolls {1,1,2}, {1,2,1} and {2,1,1} are merged to the stat of key
+//! {1,1,2}.
 using FaceTuple = std::multiset<Face>;
 
 //! @brief Fill an output stream with a FaceTuple.

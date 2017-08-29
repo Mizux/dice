@@ -20,11 +20,11 @@ Roll::Roll(std::size_t diceNumber, const Die& die)
 		_currentRoll.push_back(it.begin());
 }
 
-Tuple
+FaceTuple
 Roll::operator()() const {
-	Tuple result;
+	FaceTuple result;
 	for (const auto& it : _currentRoll)
-		result.push_back(*it);
+		result.insert(*it);
 	return result;
 }
 
@@ -46,34 +46,33 @@ Roll& Roll::operator++() {
 }
 
 int
-Roll::findTuple(const Tuple& tuple) {
+Roll::findTuple(const FaceTuple& tuple) {
 	if (tuple.size() > _dice.size()) return 0;
 
-	Tuple inputs;
+	FaceTuple inputs;
 	for (const auto& it : _currentRoll) {
-		inputs.push_back(*it);
+		inputs.insert(*it);
 	}
-	bool sucess = true;
+	bool success = true;
 
 	// Find first element equal to v, remove it from inputs.
-	auto func = [&sucess, &inputs](const Face& face) {
-		for (auto it = inputs.begin(); it != inputs.end(); ++it) {
-			if (*it == face) {
-				inputs.erase(it);
-				return;
-			}
+	auto func = [&success, &inputs](const Face& face) -> void {
+		auto it = inputs.find(face);
+		if (it != inputs.end()) {
+			inputs.erase(it);
+		} else {
+			success = false;
 		}
-		sucess = false;
 	};
 
 	int count = 0;
 	for (std::size_t i = 0; i < (_dice.size() / tuple.size()); ++i) {
-		sucess = true;
+		success = true;
 		std::for_each(tuple.begin(), tuple.end(), func);
-		if (sucess)
+		if (success)
 			count++;
 		else
-			return count;
+			break;
 	}
 	return count;
 }

@@ -43,9 +43,7 @@ class DiceWidget : public QWidget {
 
 	private:
 	//! @brief Minimum number of dice in the pool (default 6 dices)
-	QSpinBox* _diceNumberMin;
-	//! @brief Maximum number of dice in the pool (default 6 dices)
-	QSpinBox* _diceNumberMax;
+	QSpinBox* _diceNumber;
 
 	//! @brief Use to define the number of side each Die will have.
 	//! @details Must in range [1,8] (default d6)

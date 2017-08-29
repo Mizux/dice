@@ -1,25 +1,39 @@
-image: mizux/cpp:latest
-
 stages:
-  - build
-  - test
+    - build
+    - test
+    - doc
 
 build:linux:
-  stage: build
-  script:
+stage: build
+image: mizux/cpp:latest
+script:
     - mkdir build && cd build
     - cmake ..
     - make
-  artifacts:
-    paths:
-      - build/
-    expire_in: 1 week
+artifacts:
+paths:
+    - build
+expire_in: 1 week
 
 test:linux:
-  stage: test
-  script:
+stage: test
+image: mizux/cpp:latest
+script:
     - cd build
     - make coverage
-  dependencies:
+dependencies:
     - build:linux
+
+doc:linux:
+stage: doc
+image: alpine
+script:
+    - apk update && apk add doxygen
+    - doxygen
+    - mv build/usr/share/doc/dice/html public/
+artifacts:
+    paths:
+        - public
+only:
+    - master
 

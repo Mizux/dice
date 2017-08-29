@@ -2,7 +2,6 @@
 #pragma once
 
 #include "Dice.hpp"
-#include "Stat.hpp"
 
 namespace Dice {
 
@@ -32,7 +31,7 @@ class Roll {
 
 	//! @brief Return the current Roll.
 	//! @return The list of Face of the current Roll.
-	Tuple operator()() const;
+	FaceTuple operator()() const;
 
 	//! @brief Compute next dice Roll (prefix).
 	//! @return Next Roll or "empty" Roll if currentRoll was the last one.
@@ -41,7 +40,7 @@ class Roll {
 	//! @brief Search a Tuple in a Roll.
 	//! @param[in] tuple The Tuple to search.
 	//! @return Number of time Tuple is present.
-	int findTuple(const Tuple& tuple);
+	int findTuple(const FaceTuple& tuple);
 
 	private:
 	//! @brief The pool of Die.

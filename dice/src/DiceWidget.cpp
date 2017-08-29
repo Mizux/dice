@@ -74,11 +74,8 @@ DiceWidget::calculateStat() {
 	const Dice::FaceTuple tuple = getTuple();
 	qDebug() << "Tuple: " << tuple;
 
-	// For each possible dice.
-	for (std::size_t diceNumber = std::size_t(_diceNumberMin->value());
-	     diceNumber <= std::size_t(_diceNumberMax->value());
-	     ++diceNumber) {
-		Dice::Dice dice(diceNumber, die);
+	{
+		Dice::Dice dice(_diceNumber->value(), die);
 		qDebug() << "Die number: " << dice.size();
 
 		// TupleStat stat = dice.getTupleStat(tuple);
@@ -153,23 +150,18 @@ DiceWidget::_setupWidget() {
 		diceNumber->setFixedSize(diceNumber->sizeHint());
 		box->addWidget(diceNumber);
 
-		_diceNumberMin = new QSpinBox(this);
-		_diceNumberMin->setValue(6);
-		_diceNumberMin->setRange(1, 12);
-		box->addWidget(_diceNumberMin);
+		_diceNumber = new QSpinBox(this);
+		_diceNumber->setRange(1, 12);
+		_diceNumber->setValue(6);
+		box->addWidget(_diceNumber);
 
-		_diceNumberMax = new QSpinBox(this);
-		_diceNumberMax->setValue(6);
-		_diceNumberMax->setRange(1, 12);
-		box->addWidget(_diceNumberMax);
-
-		QLabel* dieSide = new QLabel("side: ", this);
+		QLabel* dieSide = new QLabel("SideNumber: ", this);
 		dieSide->setFixedSize(dieSide->sizeHint());
 		box->addWidget(dieSide);
 
 		_dieSideNumber = new QSpinBox(this);
-		_dieSideNumber->setValue(6);
 		_dieSideNumber->setRange(1, 8);
+		_dieSideNumber->setValue(6);
 		box->addWidget(_dieSideNumber);
 		connect(_dieSideNumber,
 		        OVERLOAD<int>::of(&QSpinBox::valueChanged),

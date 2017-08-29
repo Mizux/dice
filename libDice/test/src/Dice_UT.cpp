@@ -118,8 +118,20 @@ TEST_CASE("Dice Stat", "[Dice]") {
 		CHECK(die.size() == 4);
 		Dice dice(4, die);
 		CHECK(dice.size() == 4);
-		std::cerr << "dice: " << dice << std::endl;
-		// std::cerr << "diceStat: " << dice.getStat() << std::endl;
+
+		auto stat           = dice.getStat();
+		double sumFreq      = 0.0;
+		std::size_t sumRoll = 0;
+		for (const auto& it : stat) {
+			sumFreq += it.second;
+			sumRoll += it.second * dice.rollNumber();
+		}
+		CHECK(sumFreq == 1.0);
+		CHECK(sumRoll == dice.rollNumber());
+	}
+	SECTION("Dice::Stat::operator<< 2d{1,1,2}") {
+		Dice dice(2, {Face::ONE(), Face::ONE(), Face::TWO()});
+		INFO("Dic::Stat: " << dice.getStat());
 	}
 }
 

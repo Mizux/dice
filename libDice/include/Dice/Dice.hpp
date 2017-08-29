@@ -113,4 +113,19 @@ class Dice {
 	//! @note A Dice could use several time the same Die or not.
 	std::vector<Die> _dice;
 };
+
+//! @brief Fill an output stream with a Dice::Stat.
+//! @param[out] stream The output stream to fill.
+//! @param[in] stat The Dice::Stat to write down.
+//! @return The output stream.
+inline std::ostream&
+operator<<(std::ostream& stream, const Dice::Stat& stat) {
+	stream << "{";
+	for (auto it = stat.begin(); it != stat.end();) {
+		stream << "[" << it->first << "]: " << it->second;
+		if (++it != stat.end()) stream << ", ";
+	}
+	stream << "}";
+	return stream;
+}
 }

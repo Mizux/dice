@@ -136,6 +136,11 @@ TEST_CASE("Die::getFaceDistribution", "[Die]") {
 }
 
 TEST_CASE("Die::getStat", "[Die]") {
+	SECTION("Empty Die") {
+		Die die;
+		auto stat = die.getStat();
+		CHECK(stat.size() == 0);
+	}
 	SECTION("d3") {
 		Die d3 = {Face::ONE(), Face::ONE(), Face::TWO()};
 		INFO("d3: " << d3);
@@ -168,6 +173,10 @@ TEST_CASE("Die::getStat", "[Die]") {
 		for (const auto& it : statD8) {
 			CHECK(it.second == 1.0 / 8.0);
 		}
+	}
+	SECTION("Die::Stat::operator<< d3") {
+		Die d3 = {Face::ONE(), Face::ONE(), Face::TWO()};
+		INFO("Die::Stat: " << d3.getStat());
 	}
 }
 
