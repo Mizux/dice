@@ -1,4 +1,4 @@
-#include <Catch/Catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <Dice/Dice.hpp>
 #include <chrono>
