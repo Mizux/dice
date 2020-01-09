@@ -3,7 +3,7 @@ set(NAME Dice_UT)
 file(GLOB _SRCS "src/*.[hc]pp")
 
 add_executable(${NAME} ${_SRCS})
-target_link_libraries(${NAME} Catch2 Dice)
+target_link_libraries(${NAME} Catch2 Dice::Dice)
 add_test(NAME ${NAME} COMMAND ${NAME})
 add_test(NAME Dice::Stat COMMAND ${NAME} \[Stat\])
 add_test(NAME Dice::Face COMMAND ${NAME} \[Face\])

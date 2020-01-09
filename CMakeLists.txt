@@ -1,3 +1,4 @@
+# This file is just an orchestration
 cmake_minimum_required(VERSION 3.14)
 
 # Apple: Don't modify install_name when touching RPATH.
@@ -11,8 +12,7 @@ project(DiceGame VERSION 1.0 LANGUAGES CXX)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
     "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
-    FORCE
-    )
+    FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -86,15 +86,37 @@ if(BUILD_TESTING)
   FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG release-1.10.0
-    )
+    GIT_TAG release-1.10.0)
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v2.5.0
-    )
+    GIT_TAG v2.5.0)
   FetchContent_MakeAvailable(googletest Catch2)
 endif()
 
-add_subdirectory(Dice)
-add_subdirectory(DiceApp)
+add_subdirectory(libDice)
+add_subdirectory(dice)
+
+# Install
+include(GNUInstallDirs)
+install(
+  EXPORT DiceTargets
+  NAMESPACE Dice::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Dice
+  COMPONENT Devel)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(cmake/DiceConfig.cmake.in
+  "${PROJECT_BINARY_DIR}/DiceConfig.cmake"
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Dice"
+  NO_SET_AND_CHECK_MACRO
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+write_basic_package_version_file(
+  "${PROJECT_BINARY_DIR}/DiceConfigVersion.cmake"
+  COMPATIBILITY SameMajorVersion)
+install(
+  FILES
+  "${PROJECT_BINARY_DIR}/DiceConfig.cmake"
+  "${PROJECT_BINARY_DIR}/DiceConfigVersion.cmake"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Dice"
+  COMPONENT Devel)
