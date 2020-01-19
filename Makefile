@@ -110,7 +110,7 @@ run_devel: cache/docker_devel.tar
 # Run a container using the devel image.
 .PHONY: test_devel
 test_devel: cache/docker_devel.tar
-	${DOCKER_RUN_CMD} -it ${IMAGE}:devel cmake --build build --target test
+	${DOCKER_RUN_CMD} -t ${IMAGE}:devel cmake --build build --target test
 
 #########
 # CLEAN #
