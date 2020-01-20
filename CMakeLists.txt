@@ -1,5 +1,6 @@
 # This file is just an orchestration
 cmake_minimum_required(VERSION 3.14)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 # Apple: Don't modify install_name when touching RPATH.
 if(POLICY CMP0068)
