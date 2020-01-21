@@ -27,5 +27,5 @@ To build the C++ project, as usual:
 ```sh
 cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release --target all
-CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
+CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --config Release --target test
 ```
