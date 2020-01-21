@@ -25,7 +25,7 @@ Thus the project layout is as follow:
 # C++ Project Build
 To build the C++ project, as usual:
 ```sh
-cmake -S. -Bbuild -DBUILD_TYPE=Release
+cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release --target all
 CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
 ```
