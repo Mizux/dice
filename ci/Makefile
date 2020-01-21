@@ -70,7 +70,8 @@ DOCKER_RUN_CMD := docker run --rm --init \
 # Build the env image.
 .PHONY: env
 env: cache/docker_env.tar
-cache/docker_env.tar: docker/Dockerfile
+cache/docker_env.tar: \
+ docker/Dockerfile
 	mkdir -p cache
 	@docker image rm -f ${IMAGE}:env 2>/dev/null
 	${DOCKER_BUILD_CMD} --target=env -t ${IMAGE}:env -f $< .
@@ -92,13 +93,13 @@ devel: cache/docker_devel.tar
 cache/docker_devel.tar: \
  docker/Dockerfile \
  cache/docker_env.tar \
- CMakeLists.txt \
- libDice \
- dice \
- .dockerignore
+ ../CMakeLists.txt \
+ ../libDice \
+ ../dice \
+ ../.dockerignore
 	mkdir -p cache
 	@docker image rm -f ${IMAGE}:devel 2>/dev/null
-	${DOCKER_BUILD_CMD} --target=devel -t ${IMAGE}:devel -f $< .
+	${DOCKER_BUILD_CMD} --target=devel -t ${IMAGE}:devel -f $< ..
 	@rm -f $@
 	docker save ${IMAGE}:devel -o $@
 
