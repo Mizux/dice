@@ -24,7 +24,7 @@ help:
 	@echo -e "\t${BOLD}run_devel${RESET}: run a container using the devel image (debug purpose)."
 	@echo -e "\t${BOLD}test_devel${RESET}: auto test using the devel image."
 	@echo
-	@echo -e "\t${BOLD}clean${RESET}: Remove log files and docker image."
+	@echo -e "\t${BOLD}clean${RESET}: Remove cache and docker image."
 	@echo
 	@echo -e "\t${BOLD}NOCACHE=1${RESET}: use 'docker build --no-cache' when building container (default use cache)."
 	@echo
