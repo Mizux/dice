@@ -1,7 +1,7 @@
 //! @file
 
-#include <Dice/Roll.hpp>
-#include <Dice/Stat.hpp>
+#include <dice/Roll.hpp>
+#include <dice/Stat.hpp>
 #include <algorithm>
 
 namespace Dice {

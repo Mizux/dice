@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 #include <sstream>
 
-#include <Dice/Die.hpp>
+#include <dice/Die.hpp>
 
 namespace Dice {
 

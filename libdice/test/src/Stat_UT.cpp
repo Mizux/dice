@@ -1,8 +1,7 @@
 #include <catch2/catch.hpp>
 
-#include <Dice/Stat.hpp>
-
-#include <Dice/Dice.hpp>
+#include <dice/Stat.hpp>
+#include <dice/Dice.hpp>
 #include <numeric>
 
 namespace Dice {

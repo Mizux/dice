@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <Dice/Dice.hpp>
+#include <dice/Dice.hpp>
 #include <chrono>
 #include <iostream>
 #include <numeric>

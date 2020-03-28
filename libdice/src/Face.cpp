@@ -1,6 +1,6 @@
 //! @file
 
-#include <Dice/Face.hpp>
+#include <dice/Face.hpp>
 #include <map>
 
 namespace Dice {

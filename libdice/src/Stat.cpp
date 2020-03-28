@@ -1,7 +1,7 @@
 //! @file
 
-#include <Dice/Dice.hpp>
-#include <Dice/Stat.hpp>
+#include <dice/Dice.hpp>
+#include <dice/Stat.hpp>
 #include <cmath>
 #include <iostream>
 

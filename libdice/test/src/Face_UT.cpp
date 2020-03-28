@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <Dice/Face.hpp>
+#include <dice/Face.hpp>
 
 namespace Dice {
 

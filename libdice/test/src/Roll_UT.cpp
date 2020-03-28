@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <Dice/Roll.hpp>
+#include <dice/Roll.hpp>
 #include <cmath>
 
 namespace Dice {

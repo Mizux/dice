@@ -1,6 +1,6 @@
 //! @file
 
-#include <Dice/Die.hpp>
+#include <dice/Die.hpp>
 
 namespace Dice {
 

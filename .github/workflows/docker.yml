@@ -1,0 +1,25 @@
+name: Docker
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build env image
+      run: make --directory=ci env
+    - name: Copy project
+      run: make --directory=ci devel
+    - name: Build project
+      run: make --directory=ci build
+    - name: Test project
+      run: make --directory=ci test
+    - name: Build install env project
+      run: make --directory=ci install_env
+    - name: Build install devel project
+      run: make --directory=ci install_devel
+    - name: Build install build project
+      run: make --directory=ci install_build
+    - name: Build install test project
+      run: make --directory=ci install_test
