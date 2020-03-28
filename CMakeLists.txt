@@ -96,7 +96,7 @@ if(BUILD_TESTING)
   FetchContent_MakeAvailable(googletest Catch2)
 endif()
 
-add_subdirectory(libDice)
+add_subdirectory(libdice)
 add_subdirectory(dice)
 
 # Install
