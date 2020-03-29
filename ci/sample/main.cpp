@@ -7,7 +7,7 @@
 using namespace Dice;
 
 int main(int /*argc*/, char** /*argv*/) {
-  Die die = {Face::HEADS(), Face::TAILS()};
+  Die die = {Face::HEAD(), Face::TAIL()};
 
 	return 0;
 }
