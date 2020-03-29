@@ -60,16 +60,13 @@ TEST_CASE("Stat::Binomial", "[Stat]") {
 /*
 TEST_CASE("Stat::getTupleStat", "[Stat]") {
         SECTION("Heads or Tails") {
-                Die die = {Face::HEADS(), Face::TAILS()};
+                Die die = {Face::HEAD(), Face::TAIL()};
 
-                TupleStat stat = getTupleStat(5, die, {Face::HEADS(),
-Face::HEADS()});
+                TupleStat stat = getTupleStat(5, die, {Face::HEAD(), Face::HEAD()});
                 REQUIRE(stat.size() == 3);
-                INFO("0: " << stat[0] << " 1: " << stat[1] << " 2: " <<
-stat[2]);
+                INFO("0: " << stat[0] << " 1: " << stat[1] << " 2: " << stat[2]);
                 CHECK(std::accumulate(
-                        stat.begin(), stat.end(), 0., [](double lhs,
-std::pair<int, double> rhs) {
+                        stat.begin(), stat.end(), 0., [](double lhs, std::pair<int, double> rhs) {
                                 return lhs + rhs.second;
                               }) == 1.0);
                 CHECK(stat[0] == 0.1875);

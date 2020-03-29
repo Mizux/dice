@@ -148,9 +148,8 @@ TEST_CASE("Dice::operator<<", "[Dice]") {
 /*
 TEST_CASE("Dice::getTupleCount", "[Dice]") {
         SECTION("Heads or Tails") {
-                Dice dice(5, {Face::HEADS(), Face::TAILS()});
-                TupleCount count = dice.getTupleCount({Face::HEADS(),
-Face::HEADS()});
+                Dice dice(5, {Face::HEAD(), Face::TAIL()});
+                TupleCount count = dice.getTupleCount({Face::HEAD(), Face::HEAD()});
                 REQUIRE(count.size() == 3);
                 INFO("0: " << count[0] << " 1: " << count[1] << " 2: " <<
 count[2]);
@@ -167,9 +166,8 @@ count[2]);
                 CHECK(sum == std::pow(dice[0].size(), dice.size()));
         }
         SECTION("5D{H, H, T}, {H, H}") {
-                Dice dice(5, {Face::HEADS(), Face::HEADS(), Face::TAILS()});
-                TupleCount count = dice.getTupleCount({Face::HEADS(),
-Face::HEADS()});
+                Dice dice(5, {Face::HEAD(), Face::HEAD(), Face::TAIL()});
+                TupleCount count = dice.getTupleCount({Face::HEAD(), Face::HEAD()});
                 REQUIRE(count.size() == 3);
                 INFO("0: " << count[0] << " 1: " << count[1] << " 2: " <<
 count[2]);
@@ -254,9 +252,8 @@ std::chrono::high_resolution_clock::now();
                         CHECK(stat.size() == 4);
                 }
         SECTION("Heads or Tails") {
-                Dice dice(5, {Face::HEADS(), Face::TAILS()});
-                TupleStat stat = dice.getTupleStat({Face::HEADS(),
-Face::HEADS()});
+                Dice dice(5, {Face::HEAD(), Face::TAIL()});
+                TupleStat stat = dice.getTupleStat({Face::HEAD(), Face::HEAD()});
                 REQUIRE(stat.size() == 3);
                 INFO("0: " << stat[0] << " 1: " << stat[1] << " 2: " <<
 stat[2]);
@@ -270,12 +267,10 @@ stat[2]);
                                                 }) == 1.0);
         }
         SECTION("5D{H, H, T}, {H, H}") {
-                Dice die(5, {Face::HEADS(), Face::HEADS(), Face::TAILS()});
-                TupleStat stat = die.getTupleStat({Face::HEADS(),
-Face::HEADS()});
+                Dice die(5, {Face::HEAD(), Face::HEAD(), Face::TAIL()});
+                TupleStat stat = die.getTupleStat({Face::HEAD(), Face::HEAD()});
                 REQUIRE(stat.size() == 3);
-                INFO("0: " << stat[0] << " 1: " << stat[1] << " 2: " <<
-stat[2]);
+                INFO("0: " << stat[0] << " 1: " << stat[1] << " 2: " << stat[2]);
                 CHECK(std::abs(stat[0] - 0.0452675) < 0.00001);
                 CHECK(std::abs(stat[1] - 0.493827) < 0.00001);
                 CHECK(std::abs(stat[2] - 0.460905) < 0.00001);
