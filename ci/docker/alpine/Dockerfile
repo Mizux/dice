@@ -22,17 +22,12 @@ RUN cmake --build build --target install
 FROM build AS test
 RUN cmake --build build --target test
 
-# Create a production image
-FROM alpine:edge AS install_env
-LABEL maintainer="mizux.dev@gmail.com"
-ENV PATH=$PATH:/usr/local/bin
-RUN apk add --no-cache qt5-qtbase ttf-freefont
+FROM env AS install_env
 COPY --from=build /usr/local /usr/local/
-CMD [ "bin/sh" ]
 
 FROM install_env AS install_devel
 WORKDIR /home/sample
-COPY sample .
+COPY ci/sample .
 
 FROM install_devel AS install_build
 RUN cmake -S. -Bbuild

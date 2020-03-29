@@ -12,8 +12,8 @@
 #include <numeric>
 #include <sstream>
 
-#include <Dice/Roll.hpp>
-#include <Dice/Stat.hpp>
+#include <dice/Roll.hpp>
+#include <dice/Stat.hpp>
 
 DiceWidget::DiceWidget(QWidget* parent)
   : QWidget(parent) {

@@ -7,8 +7,8 @@
 #include <QTableWidget>
 #include <QWidget>
 
-#include <Dice/Dice.hpp>
-#include <Dice/Die.hpp>
+#include <dice/Dice.hpp>
+#include <dice/Die.hpp>
 
 //! @brief Widget use to calculate and display FaceTuple probability.
 class DiceWidget : public QWidget {

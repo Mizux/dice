@@ -1,14 +1,23 @@
 # Project Files unneeded by docker
+ci/Makefile
+ci/docker
+ci/doc
+ci/cache
 .git
 .gitignore
 .github
-README.md
 .dockerignore
-.travis.yml
 .clang-format
+.appveyor.yml
+.travis.yml
+AUTHORS
+CONTRIBUTING.md
+CONTRIBUTORS
+LICENSE
+README.md
 
 build/
-ci/
 
 # Editor directories and files
 *.user
+*.swp
