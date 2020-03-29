@@ -9,19 +9,49 @@ install: true
 # `travis_terminate 1`
 script:
   - >
-    echo 'travis_fold:start:build_env'
+    echo 'travis_fold:start:env'
     && make --directory=ci env
-    && echo 'travis_fold:end:build_env'
+    && echo 'travis_fold:end:env'
     || travis_terminate 1
 
   - >
-    echo 'travis_fold:start:build_devel'
+    echo 'travis_fold:start:devel'
     && make --directory=ci devel
-    && echo 'travis_fold:end:build_devel'
+    && echo 'travis_fold:end:devel'
     || travis_terminate 1
 
   - >
-    echo 'travis_fold:start:test_devel'
-    && make --directory=ci test_devel
-    && echo 'travis_fold:end:test_devel'
+    echo 'travis_fold:start:build'
+    && make --directory=ci build
+    && echo 'travis_fold:end:build'
+    || travis_terminate 1
+
+  - >
+    echo 'travis_fold:start:test'
+    && make --directory=ci test
+    && echo 'travis_fold:end:test'
+    || travis_terminate 1
+
+  - >
+    echo 'travis_fold:start:install_env'
+    && make --directory=ci install_env
+    && echo 'travis_fold:end:install_env'
+    || travis_terminate 1
+
+  - >
+    echo 'travis_fold:start:install_devel'
+    && make --directory=ci install_devel
+    && echo 'travis_fold:end:install_devel'
+    || travis_terminate 1
+
+  - >
+    echo 'travis_fold:start:install_build'
+    && make --directory=ci install_build
+    && echo 'travis_fold:end:install_build'
+    || travis_terminate 1
+
+  - >
+    echo 'travis_fold:start:install_test'
+    && make --directory=ci install_test
+    && echo 'travis_fold:end:install_test'
     || travis_terminate 1
