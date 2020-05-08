@@ -20,26 +20,26 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(APPLE)
-  set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../lib")
-else()
-  set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib")
-endif()
-
+include(GNUInstallDirs)
 if(UNIX)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
-  set(CMAKE_DOCUMENTATION_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/share/doc)
   option(BUILD_SHARED_LIBS "Build shared libraries(.so or .dylib)." ON)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path;@loader_path/../${CMAKE_INSTALL_LIBDIR}")
+  else()
+    set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+  endif()
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+  set(CMAKE_DOCUMENTATION_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_DOCDIR})
 else()
   # only support for static build on Windows.
   set(BUILD_SHARED_LIBS OFF)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/bin)
-  set(CMAKE_DOCUMENTATION_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/share/doc)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_INSTALL_BINDIR})
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_INSTALL_BINDIR})
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_INSTALL_BINDIR})
+  set(CMAKE_DOCUMENTATION_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_INSTALL_DOCDIR})
 endif()
 
 #############
@@ -47,36 +47,36 @@ endif()
 #############
 option(ENABLE_GCOV "Compile with coverage option" OFF)
 if(${ENABLE_GCOV})
-	if(CMAKE_COMPILER_IS_GNUCXX) # gcc / gcov
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
-		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
-	elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang") # clang / llvm-cov gcov
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
-		set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-	endif()
+  if(CMAKE_COMPILER_IS_GNUCXX) # gcc / gcov
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang") # clang / llvm-cov gcov
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+  endif()
 
-	find_program(GCOVR_PRG gcovr ./tools)
-	if(GCOVR_PRG)
-		message(STATUS "Found gcovr: ${GCOVR_PRG}")
-		add_custom_target(coverage
-			COMMAND ${CMAKE_COMMAND} -E remove_directory coverage
-			COMMAND ${CMAKE_COMMAND} -E make_directory coverage
-			COMMAND ctest --output-on-failure
-			COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
-			--exclude ".*/Catch.hpp" --exclude=".*/test/"
-			--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
-			COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
-			--exclude ".*/Catch.hpp" --exclude ".*/test/"
-			--exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
-			--html --html-details --output coverage/index.html
-			WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-	else()
-		message(FATAL_ERROR "Can't find gcovr")
-	endif()
+  find_program(GCOVR_PRG gcovr ./tools)
+  if(GCOVR_PRG)
+    message(STATUS "Found gcovr: ${GCOVR_PRG}")
+    add_custom_target(coverage
+      COMMAND ${CMAKE_COMMAND} -E remove_directory coverage
+      COMMAND ${CMAKE_COMMAND} -E make_directory coverage
+      COMMAND ctest --output-on-failure
+      COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
+      --exclude ".*/Catch.hpp" --exclude=".*/test/"
+      --exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
+      COMMAND ${GCOVR_PRG} --root=.. --delete ${GCOVR_EXCLUDE}
+      --exclude ".*/Catch.hpp" --exclude ".*/test/"
+      --exclude ".*App/.*" --exclude ".*/moc_.*" --exclude ".*/qrc_.*"
+      --html --html-details --output coverage/index.html
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+  else()
+    message(FATAL_ERROR "Can't find gcovr")
+  endif()
 endif()
 
 #add_subdirectory(doc)
