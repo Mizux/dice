@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <sstream>
 
 #include <dice/Die.hpp>
@@ -146,7 +146,7 @@ TEST_CASE("Die::getStat", "[Die]") {
 		INFO("d3: " << d3);
 		REQUIRE(d3.size() == 3);
 		Die::Stat statD3 = d3.getStat();
-		INFO("Stat d3: " << statD3)
+		INFO("Stat d3: " << statD3);
 		REQUIRE(statD3.size() == 2);
 		CHECK(statD3[Face::ONE()] == 2. / 3.);
 		CHECK(statD3[Face::TWO()] == 1. / 3.);
@@ -157,7 +157,7 @@ TEST_CASE("Die::getStat", "[Die]") {
 		INFO("d6: " << d6);
 		REQUIRE(d6.size() == 6);
 		Die::Stat statD6 = d6.getStat();
-		INFO("Stat d6: " << statD6)
+		INFO("Stat d6: " << statD6);
 		CHECK(statD6.size() == 6);
 		for (const auto& it : statD6) {
 			CHECK(it.second == 1.0 / 6.0);
@@ -168,7 +168,7 @@ TEST_CASE("Die::getStat", "[Die]") {
 		INFO("d8: " << d8);
 		REQUIRE(d8.size() == 8);
 		Die::Stat statD8 = d8.getStat();
-		INFO("Stat d8: " << statD8)
+		INFO("Stat d8: " << statD8);
 		CHECK(statD8.size() == 8);
 		for (const auto& it : statD8) {
 			CHECK(it.second == 1.0 / 8.0);
