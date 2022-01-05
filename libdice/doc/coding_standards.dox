@@ -23,10 +23,9 @@
   - @b src: Implementation files (i.e. .cpp, _p.cpp, _p.hpp).
   - @b test: Unit test files.
   - @b build: Build directory.
-	  - @b usr/lib: Library generated files (i.e. .so).
-    - @b usr/bin: Binary generated files.
-    - @b sr/share/doc: Documentation generated files.
-  .
+    - @b lib: Library generated files (i.e. .so).
+    - @b bin: Binary generated files.
+    - @b share/doc: Documentation generated files.
   
   The implementation and public header files should appear in separate
 	directory.
