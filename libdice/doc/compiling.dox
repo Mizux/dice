@@ -41,8 +41,7 @@
   @subsection Dice_compiling_sec_3_0 Compiling sources
   Firstly you can invoke CMAKE configuration tool:
   @code{sh}
-	mkdir build && cd build
-  cmake -GNinja ..
+  cmake -S . -B build -G Ninja
   @endcode
   Hopefully this will finish successfully and give you a summary of what options
   were configured.  If the summary shows something you didn't want, go back and
@@ -50,26 +49,23 @@
 
   Now you can build the code.
   @code{sh}
-	cd build
-  ninja
+  cmake --build build -v
   @endcode
 
   @subsection Dice_compiling_sec_3_1 Cleaning sources
   To clean up build files
   @code{sh}
-  cd build
-	ninja clean
+  cmake --build build --target clean -v
   @endcode
 
   @subsection Dice_compiling_sec_3_2 Generate Doxygen
   You can also build the \b USEFULL documentation:
   @code{sh}
-  cd build
-  ninja libDice_doc
+  cmake --build build --target libDice_doc
   @endcode
 
   and display it with:
   @code{sh}
-  chromium-browser build/dev/share/doc/libdice/html/index.html
+  chromium build/share/doc/DiceGame/Dice/html/index.html
   @endcode
 **/
