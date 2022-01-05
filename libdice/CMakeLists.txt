@@ -12,26 +12,17 @@ add_library(Dice "")
 target_include_directories(Dice PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include>")
-target_sources(Dice
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dice/Dice.hpp>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dice/Die.hpp>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dice/Face.hpp>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dice/Roll.hpp>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dice/Stat.hpp>
-    $<INSTALL_INTERFACE:include/dice/Dice.hpp>
-    $<INSTALL_INTERFACE:include/dice/Die.hpp>
-    $<INSTALL_INTERFACE:include/dice/Face.hpp>
-    $<INSTALL_INTERFACE:include/dice/Roll.hpp>
-    $<INSTALL_INTERFACE:include/dice/Stat.hpp>
-  PRIVATE
-    ${_SRCS}
-  )
+target_sources(Dice PRIVATE
+  ${_HDRS}
+  ${_SRCS}
+)
 #target_link_libraries(Dice)
 target_compile_features(Dice PUBLIC cxx_std_11)
 set_target_properties(Dice PROPERTIES
   VERSION ${PROJECT_VERSION}
-  PUBLIC_HEADER $<TARGET_PROPERTY:Dice,INTERFACE_SOURCES>
+  )
+set_property(TARGET Dice PROPERTY
+  PUBLIC_HEADER ${_HDRS}
   )
 add_library(Dice::Dice ALIAS Dice)
 
