@@ -4,26 +4,41 @@ FROM archlinux:latest AS env
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
 RUN pacman -Syu --noconfirm \
-git base-devel cmake \
-qt6 ttf-dejavu
+ git base-devel cmake \
+ qt6 ttf-dejavu
 
+# Add the library src to our build env
 FROM env AS devel
-WORKDIR /home/app
+WORKDIR /home/project
 COPY . .
 
 FROM devel AS build
 RUN cmake -version
-RUN cmake -S. -Bbuild
+RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build --target all -v
-RUN cmake --build build --target install -v -- DESTDIR=install
+RUN cmake --build build --target install -v
 
 FROM build AS test
-RUN cmake --build build --target test
+RUN cmake --build build --target test -v
+
+# Test install rules
+FROM env AS install_env
+COPY --from=build /usr/local /usr/local/
+
+FROM install_env AS install_devel
+WORKDIR /home/samples
+COPY ci/samples .
+
+FROM install_devel AS install_build
+RUN cmake -S. -Bbuild
+RUN cmake --build build --target all -v
+
+FROM install_build AS install_test
+RUN cmake --build build --target test -v
 
 # Create a production image
 FROM archlinux:latest AS prod
 RUN pacman -Syu --noconfirm qt6 ttf-dejavu
-
 # Create app directory
 WORKDIR /home/app
-COPY --from=build /home/app/build/install/usr/local/ .
+COPY --from=build /usr/local/ .

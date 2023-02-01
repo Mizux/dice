@@ -9,7 +9,7 @@ RUN ln -snf /usr/share/zoneinfo/Europe/Paris /etc/localtime \
 # qt6-base-dev
 # jammy(22.04 LTS): need missing libgl-dev
 # kinetic(22.10): libgl-dev already a deps of the package
-RUN apt update -qq \
+RUN apt update -q \
 && apt install -yq \
  git wget libssl-dev \
  build-essential cmake \
@@ -18,28 +18,43 @@ RUN apt update -qq \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 FROM env AS devel
-WORKDIR /home/app
+WORKDIR /home/project
 COPY . .
 
 FROM devel AS build
 RUN cmake -version
-RUN cmake -S. -Bbuild
+RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build --target all -v
-RUN cmake --build build --target install -v -- DESTDIR=install
+RUN cmake --build build --target install -v
 
 FROM build AS test
-RUN cmake --build build --target test
+RUN cmake --build build --target test -v
+
+# Test install rules
+FROM env AS install_env
+COPY --from=build /usr/local /usr/local/
+
+FROM install_env AS install_devel
+WORKDIR /home/samples
+COPY ci/samples .
+
+FROM install_devel AS install_build
+RUN cmake -S. -Bbuild
+RUN cmake --build build --target all -v
+
+FROM install_build AS install_test
+RUN cmake --build build --target test -v
 
 # Create a production image
 FROM ubuntu:latest AS prod
 RUN ln -snf /usr/share/zoneinfo/Europe/Paris /etc/localtime \
 && echo Europe/Paris > /etc/timezone
 
-RUN apt-get update -qq \
-&& apt-get install -yq qtbase5-dev \
+RUN apt-get update -q \
+&& apt-get install -yq qt6-base-dev libgl-dev \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Create app directory
 WORKDIR /home/app
-COPY --from=build /home/app/build/install/usr/local/ .
+COPY --from=build /usr/local/ .

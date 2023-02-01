@@ -1,12 +1,13 @@
 # Create a virtual environment with all tools installed
-# ref: https://hub.docker.com/_/alpine
-FROM alpine:edge AS env
+# ref: https://hub.docker.com/_/fedora
+FROM fedora:latest AS env
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
-RUN apk add --no-cache \
- git g++ clang make cmake \
- doxygen graphviz \
- qt6-qtbase-dev ttf-freefont
+RUN dnf -y update \
+&& dnf -y install git wget \
+&& dnf -y groupinstall "Development Tools" \
+&& dnf -y install gcc-c++ cmake \
+&& dnf clean all
 
 # Add the library src to our build env
 FROM env AS devel
@@ -27,8 +28,8 @@ FROM env AS install_env
 COPY --from=build /usr/local /usr/local/
 
 FROM install_env AS install_devel
-WORKDIR /home/sample
-COPY ci/sample .
+WORKDIR /home/samples
+COPY ci/samples .
 
 FROM install_devel AS install_build
 RUN cmake -S. -Bbuild
@@ -36,10 +37,3 @@ RUN cmake --build build --target all -v
 
 FROM install_build AS install_test
 RUN cmake --build build --target test -v
-
-# Create a production image
-FROM alpine:edge AS prod
-RUN apk add --no-cache qt-qtbase-x11 ttf-freefont
-# Create app directory
-WORKDIR /home/app
-COPY --from=build /usr/local .
