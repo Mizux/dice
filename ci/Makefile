@@ -69,18 +69,19 @@ SUFFIXES =
 IMAGE := ${PROJECT}
 
 ifdef NOCACHE
-DOCKER_BUILD_CMD := docker build --no-cache
+DOCKER_BUILD_CMD := docker build --platform linux/amd64 --no-cache
 else
-DOCKER_BUILD_CMD := docker build
+DOCKER_BUILD_CMD := docker build --platform linux/amd64
 endif
 
 DOCKER_RUN_CMD := docker run --rm --init \
- --name ${IMAGE} --net=host \
+ --net=host \
  --env="DISPLAY" \
+ --env="XDG_RUNTIME_DIR" \
  --volume="${HOME}/.Xauthority:/root/.Xauthority:rw"
 
 # Currently supported distro
-DISTROS = alpine
+DISTROS = alpine archlinux ubuntu
 
 # $* stem
 # $< first prerequist
@@ -123,6 +124,12 @@ $$(clean_targets_$1): clean_%_$1:
 endef
 
 $(foreach stage,$(STAGES),$(eval $(call make-stage-target,$(stage))))
+
+## RUN ##
+run_targets = $(addsuffix _run, $(DISTROS))
+.PHONY: $(run_targets)
+$(run_targets): %_run: %_prod
+	${DOCKER_RUN_CMD} -it --name ${IMAGE}_$* ${IMAGE}:$*_prod ./bin/DiceApp
 
 ## CLEAN ##
 clean_targets = $(addprefix clean_, $(DISTROS))
