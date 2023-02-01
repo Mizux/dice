@@ -29,7 +29,7 @@ set_property(TARGET Dice PROPERTY
 add_library(Dice::Dice ALIAS Dice)
 
 if(BUILD_TESTING)
-  add_subdirectory(test)
+  add_subdirectory(tests)
 endif()
 
 # Install
