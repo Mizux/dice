@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(Dice VERSION 1.0 LANGUAGES CXX)
-message(STATUS "project: ${PROJECT_NAME}")
-message(STATUS "version: ${PROJECT_VERSION}")
+message(STATUS "Project: ${PROJECT_NAME}, version: ${PROJECT_VERSION}")
+#message(STATUS "major: ${PROJECT_VERSION_MAJOR}")
+#message(STATUS "minor: ${PROJECT_VERSION_MINOR}")
+#message(STATUS "patch: ${PROJECT_VERSION_PATCH}")
 
-add_subdirectory(doc)
+add_subdirectory(docs)
 
 file(GLOB_RECURSE _HDRS "include/*.hpp" "include/*hxx")
 file(GLOB_RECURSE _SRCS "src/*.[hc]pp")

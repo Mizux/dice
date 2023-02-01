@@ -2,10 +2,10 @@
 * @author Mizux <dev@mizux.net>
 */
 
-/*! @mainpage Dice
+/*! @mainpage Dice Game
 This is the meta Cross-Project documentation.
 
 This repository contains several samples:
 @li @ref Dice_main "libDice"
 @li @ref DiceApp_main "DiceApp"
-**/
+*/

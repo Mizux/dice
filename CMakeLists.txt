@@ -1,12 +1,12 @@
 # This file is just an orchestration
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(CMAKE_EXPORT_COMPILE_COMMANDS "Export compile command" TRUE)
 
 project(DiceGame VERSION 1.0 LANGUAGES CXX)
 set(PROJECT_NAMESPACE Dice)
-message(STATUS "${PROJECT_NAME} version: ${PROJECT_VERSION}")
+message(STATUS "Project: ${PROJECT_NAME}, version: ${PROJECT_VERSION}")
 #message(STATUS "major: ${PROJECT_VERSION_MAJOR}")
 #message(STATUS "minor: ${PROJECT_VERSION_MINOR}")
 #message(STATUS "patch: ${PROJECT_VERSION_PATCH}")
@@ -124,8 +124,10 @@ if(BUILD_TESTING)
   FetchContent_MakeAvailable(googletest Catch2)
 endif()
 
+add_subdirectory(docs)
+
 add_subdirectory(libdice)
-add_subdirectory(dice)
+add_subdirectory(diceapp)
 
 # Install
 include(GNUInstallDirs)
