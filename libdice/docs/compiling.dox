@@ -8,8 +8,8 @@
   @section Dice_compiling_sec_1 Supported Distribution
   Project is currently known to compile and run on the following distribution:
 
-  @li Archlinux using gcc5.3.0, Qt5.6
-  @li Archlinux using clang3.7.1, Qt5.6
+  @li Archlinux using gcc, Qt6
+  @li Archlinux using clang, Qt6
 
   It is very possible that the project will compile with other compilers and run on
   other distribution, though those mentioned above have been tested.

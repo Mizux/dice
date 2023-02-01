@@ -11,15 +11,15 @@ add_subdirectory(docs)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt6Core REQUIRED)
+find_package(Qt6Gui REQUIRED)
+find_package(Qt6Widgets REQUIRED)
 
 file(GLOB_RECURSE _SRCS "src/*.[hc]pp")
 file(GLOB_RECURSE _QRCS "data/*.qrc")
 
 add_executable(DiceApp ${_SRCS} ${_QRCS})
-target_link_libraries(DiceApp Dice::Dice Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(DiceApp Dice::Dice Qt6::Core Qt6::Gui Qt6::Widgets)
 install(
   TARGETS DiceApp
   EXPORT DiceTargets

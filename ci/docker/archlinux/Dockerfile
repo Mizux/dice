@@ -22,8 +22,7 @@ RUN cmake --build build --target test
 
 # Create a production image
 FROM archlinux:latest AS prod
-LABEL maintainer="mizux.dev@gmail.com"
-RUN pacman -Syu --noconfirm qt5 ttf-dejavu
+RUN pacman -Syu --noconfirm qt6 ttf-dejavu
 
 # Create app directory
 WORKDIR /home/app

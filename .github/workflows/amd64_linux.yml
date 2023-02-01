@@ -11,6 +11,10 @@ jobs:
       run: |
         sudo apt update -q
         sudo apt install -yq qt6-base-dev libgl-dev
+    - name: Install doxygen
+      run: |
+        sudo apt update -q
+        sudo apt install -yq doxygen
     - uses: actions/checkout@v3
     - name: Configure
       run: cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
