@@ -24,7 +24,7 @@ RUN cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env
-COPY --from=build /usr/local /usr/local/
+COPY --from=build /usr/local/ /usr/local/
 
 FROM install_env AS install_devel
 WORKDIR /home/sample

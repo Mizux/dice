@@ -22,7 +22,7 @@ WORKDIR /home/project
 COPY . .
 
 FROM devel AS build
-RUN cmake -version
+RUN cmake --version
 RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build --target all -v
 RUN cmake --build build --target install -v
@@ -32,11 +32,11 @@ RUN cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env
-COPY --from=build /usr/local /usr/local/
+COPY --from=build /usr/local/ /usr/local/
 
 FROM install_env AS install_devel
-WORKDIR /home/samples
-COPY ci/samples .
+WORKDIR /home/sample
+COPY ci/sample .
 
 FROM install_devel AS install_build
 RUN cmake -S. -Bbuild

@@ -25,11 +25,11 @@ RUN cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env
-COPY --from=build /usr/local /usr/local/
+COPY --from=build /usr/local/ /usr/local/
 
 FROM install_env AS install_devel
-WORKDIR /home/samples
-COPY ci/samples .
+WORKDIR /home/sample
+COPY ci/sample .
 
 FROM install_devel AS install_build
 RUN cmake -S. -Bbuild
