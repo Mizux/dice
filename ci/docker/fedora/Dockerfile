@@ -6,7 +6,7 @@ ENV PATH=/usr/local/bin:$PATH
 RUN dnf -y update \
 && dnf -y install git wget \
 && dnf -y groupinstall "Development Tools" \
-&& dnf -y install gcc-c++ cmake \
+&& dnf -y install gcc-c++ cmake qt6-qtbase-devel \
 && dnf clean all
 
 # Add the library src to our build env
