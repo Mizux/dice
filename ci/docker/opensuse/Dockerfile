@@ -4,7 +4,10 @@ FROM opensuse/tumbleweed AS env
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
 RUN zypper update -y \
-&& zypper install -y git patch gcc gcc-c++ cmake \
+&& zypper install -y \
+ git patch \
+ gcc gcc-c++ cmake \
+ qt6-base-devel \
 && zypper clean -a
 ENV CC=gcc CXX=g++
 
