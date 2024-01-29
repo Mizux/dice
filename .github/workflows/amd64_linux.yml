@@ -15,7 +15,7 @@ jobs:
       run: |
         sudo apt update -q
         sudo apt install -yq doxygen
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Configure
       run: cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
     - name: Build
