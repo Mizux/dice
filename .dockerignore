@@ -18,8 +18,8 @@ ci/Makefile
 AUTHORS
 CONTRIBUTORS
 LICENSE
-CONTRIBUTING.md
 README.md
+CONTRIBUTING.md
 
 # Native cmake build
 build/

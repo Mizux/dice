@@ -26,7 +26,7 @@ Github-CI:<br>
 
 # Introduction
 
-Some dice stuff work in progress...
+Some dice stuff in C++/Qt, work in progress...
 
 # Project directory layout
 Thus the project layout is as follow:
@@ -42,7 +42,7 @@ To build the C++ project, as usual:
 
 ```sh
 cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
+cmake --build build --config Release --target all
 CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --config Release --target test
 ```
 
