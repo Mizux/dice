@@ -1,5 +1,4 @@
-# This file is just an orchestration
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.18...4.0)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Enable output of compile commands during generation.
@@ -115,44 +114,31 @@ endif()
 set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 include(CTest)
 
-include(FetchContent)
+option(BUILD_ZLIB "Build the ZLIB dependency Library" ON)
+message(STATUS "Build ZLIB: ${BUILD_ZLIB}")
+
+option(BUILD_absl "Build the abseil-cpp dependency Library" ON)
+message(STATUS "Build abseil-cpp: ${BUILD_absl}")
+
 if(BUILD_TESTING)
-  FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG release-1.11.0)
-  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-  FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG devel)
-  FetchContent_MakeAvailable(googletest Catch2)
+  option(BUILD_re2 "Build the re2 dependency Library" ON)
+  message(STATUS "Build re2: ${BUILD_re2}")
+
+  option(BUILD_googletest "Build googletest" ON)
+  message(STATUS "Build googletest: ${BUILD_googletest}")
+else()
+  set(BUILD_re2 OFF)
+  set(BUILD_googletest OFF)
 endif()
 
-add_subdirectory(docs)
+# Find system deps
+include(system_deps)
 
-add_subdirectory(libdice)
-add_subdirectory(diceapp)
+# Build Needed dependencies
+add_subdirectory(cmake/dependencies dependencies)
 
-# Install
-include(GNUInstallDirs)
-install(
-  EXPORT DiceTargets
-  NAMESPACE ${PROJECT_NAMESPACE}::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Dice
-  COMPONENT Devel)
-include(CMakePackageConfigHelpers)
-configure_package_config_file(cmake/DiceConfig.cmake.in
-  "${PROJECT_BINARY_DIR}/DiceConfig.cmake"
-  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Dice"
-  NO_SET_AND_CHECK_MACRO
-  NO_CHECK_REQUIRED_COMPONENTS_MACRO)
-write_basic_package_version_file(
-  "${PROJECT_BINARY_DIR}/DiceConfigVersion.cmake"
-  COMPATIBILITY SameMajorVersion)
-install(
-  FILES
-  "${PROJECT_BINARY_DIR}/DiceConfig.cmake"
-  "${PROJECT_BINARY_DIR}/DiceConfigVersion.cmake"
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Dice"
-  COMPONENT Devel)
+include(host)
+# verify deps
+include(check_deps)
+
+include(cpp)
