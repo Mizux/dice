@@ -1,6 +1,7 @@
 # Create a virtual environment with all tools installed
 # ref: https://hub.docker.com/r/opensuse/tumbleweed
 FROM opensuse/tumbleweed AS env
+
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
 RUN zypper update -y \
@@ -23,7 +24,7 @@ RUN cmake --build build --target all -v
 RUN cmake --build build --target install -v
 
 FROM build AS test
-RUN cmake --build build --target test -v
+RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env
@@ -38,4 +39,4 @@ RUN cmake -S. -Bbuild
 RUN cmake --build build --target all -v
 
 FROM install_build AS install_test
-RUN cmake --build build --target test -v
+RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v

@@ -1,11 +1,9 @@
 # Create a virtual environment with all tools installed
 # ref: https://hub.docker.com/_/ubuntu
 FROM ubuntu:latest AS env
+
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
-RUN ln -snf /usr/share/zoneinfo/Europe/Paris /etc/localtime \
-&& echo Europe/Paris > /etc/timezone
-
 # qt6-base-dev
 # jammy(22.04 LTS): need missing libgl-dev
 # kinetic(22.10): libgl-dev already a deps of the package
@@ -28,7 +26,7 @@ RUN cmake --build build --target all -v
 RUN cmake --build build --target install -v
 
 FROM build AS test
-RUN cmake --build build --target test -v
+RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env
@@ -43,7 +41,7 @@ RUN cmake -S. -Bbuild
 RUN cmake --build build --target all -v
 
 FROM install_build AS install_test
-RUN cmake --build build --target test -v
+RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
 
 # Create a production image
 FROM ubuntu:latest AS prod

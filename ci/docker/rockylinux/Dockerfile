@@ -1,13 +1,15 @@
 # Create a virtual environment with all tools installed
-# ref: https://hub.docker.com/_/alpine
-FROM alpine:edge AS env
+# ref: https://hub.docker.com/_/rockylinux
+FROM rockylinux:9 AS env
 
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
-RUN apk add --no-cache \
- git g++ clang make cmake \
- doxygen graphviz \
- qt6-qtbase-dev ttf-freefont
+RUN dnf -y update \
+&& dnf -y groupinstall "Development Tools" \
+&& dnf -y install git wget openssl-devel cmake qt6-qtbase-devel \
+&& dnf clean all \
+&& rm -rf /var/cache/dnf
+CMD [ "/usr/bin/bash" ]
 
 # Add the library src to our build env
 FROM env AS devel
@@ -25,7 +27,7 @@ RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env
-COPY --from=build /usr/local/ /usr/local/
+COPY --from=build /usr/local /usr/local/
 
 FROM install_env AS install_devel
 WORKDIR /home/sample
@@ -37,10 +39,3 @@ RUN cmake --build build --target all -v
 
 FROM install_build AS install_test
 RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
-
-# Create a production image
-FROM alpine:edge AS prod
-RUN apk add --no-cache qt-qtbase-x11 ttf-freefont
-# Create app directory
-WORKDIR /home/app
-COPY --from=build /usr/local .

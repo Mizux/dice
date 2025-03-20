@@ -25,12 +25,15 @@ help:
 	@echo -e "\t${BOLD}clean_native${RESET}: Remove ALL caches and docker images."
 	@echo
 	@echo -e "\tWith ${BOLD}<distro>${RESET}:"
+	@echo -e "\t\t${BOLD}almalinux${RESET} (latest)"
 	@echo -e "\t\t${BOLD}alpine${RESET} (edge)"
 	@echo -e "\t\t${BOLD}archlinux${RESET} (latest)"
+	@echo -e "\t\t${BOLD}debian${RESET} (latest)"
 	@echo -e "\t\t${BOLD}fedora${RESET} (latest)"
 	@echo -e "\t\t${BOLD}opensuse${RESET} (tumbleweed)"
+	@echo -e "\t\t${BOLD}rockylinux${RESET} (9)"
 	@echo -e "\t\t${BOLD}ubuntu${RESET} (rolling)"
-	@echo -e "\t\t${BOLD}all${RESET} trigger ALL DISTROS."
+	@echo -e "\t\t${BOLD}all${RESET}: trigger ALL DISTROS."
 	@echo
 	@echo -e "\tWith ${BOLD}<stage>${RESET}:"
 	@echo -e "\t\t${BOLD}env${RESET}"
@@ -114,6 +117,7 @@ help:
 	@echo -e "\t${BOLD}distclean${RESET}: Remove everything."
 	@echo
 	@echo -e "\t${BOLD}NOCACHE=1${RESET}: use 'docker build --no-cache' when building container (default use cache)."
+	@echo -e "\t${BOLD}VERBOSE=1${RESET}: use 'docker build --progress=plain' when building container."
 	@echo
 	@echo -e "branch: $(BRANCH)"
 	@echo -e "sha1: $(SHA1)"
@@ -121,13 +125,13 @@ help:
 # Need to add cmd_distro to PHONY otherwise target are ignored since they do not
 # contain recipe (using FORCE do not work here)
 .PHONY: all
-all: build
+all: all_test
 
 # Delete all implicit rules to speed up makefile
 MAKEFLAGS += --no-builtin-rules
 .SUFFIXES:
 # Remove some rules from gmake that .SUFFIXES does not remove.
-SUFFIXES =
+SUFFIXES :=
 # Keep all intermediate files
 # ToDo: try to remove it later
 .SECONDARY:
@@ -135,12 +139,15 @@ SUFFIXES =
 # Docker image name prefix.
 IMAGE := ${PROJECT}
 
-ifdef NOCACHE
-DOCKER_BUILD_CMD := docker build --no-cache
-DOCKER_BUILDX_CMD := docker buildx build --no-cache
-else
 DOCKER_BUILD_CMD := docker build
 DOCKER_BUILDX_CMD := docker buildx build
+ifdef NOCACHE
+DOCKER_BUILD_CMD := ${DOCKER_BUILD_CMD} --no-cache
+DOCKER_BUILDX_CMD := ${DOCKER_BUILDX_CMD} --no-cache
+endif
+ifdef VERBOSE
+DOCKER_BUILD_CMD := ${DOCKER_BUILD_CMD} --progress=plain
+DOCKER_BUILDX_CMD := ${DOCKER_BUILDX_CMD} --progress=plain
 endif
 
 DOCKER_RUN_CMD := docker run --rm --init \
@@ -150,7 +157,15 @@ DOCKER_RUN_CMD := docker run --rm --init \
  --volume="${HOME}/.Xauthority:/root/.Xauthority:rw"
 
 # Currently supported distro
-DISTROS = alpine archlinux fedora opensuse ubuntu
+DISTROS := \
+ almalinux \
+ alpine \
+ archlinux \
+ debian \
+ fedora \
+ opensuse \
+ rockylinux \
+ ubuntu
 
 # $* stem
 # $< first prerequist
@@ -159,11 +174,12 @@ DISTROS = alpine archlinux fedora opensuse ubuntu
 ############
 ## STAGES ##
 ############
-STAGES = env devel build test install_env install_devel install_build install_test
+STAGES := env devel build test install_env install_devel install_build install_test
+
 define make-stage-target =
 #$$(info STAGE: $1)
 #$$(info Create targets: all_$1 $(addsuffix _$1, $(DISTROS)).)
-targets_$1 = $(addsuffix _$1, $(DISTROS))
+targets_$1 := $(addsuffix _$1, $(DISTROS))
 .PHONY: all_$1 $$(targets_$1)
 all_$1: $$(targets_$1)
 $$(targets_$1): %_$1: docker/%/Dockerfile
@@ -171,7 +187,7 @@ $$(targets_$1): %_$1: docker/%/Dockerfile
 	${DOCKER_BUILD_CMD} --target=$1 --tag ${IMAGE}:$$*_$1 -f $$< ..
 
 #$$(info Create targets: save_all_$1 $(addprefix save_, $(addsuffix _$1, $(DISTROS))) (debug).)
-save_targets_$1 = $(addprefix save_, $(addsuffix _$1, $(DISTROS)))
+save_targets_$1 := $(addprefix save_, $(addsuffix _$1, $(DISTROS)))
 .PHONY: save_all_$1 $$(save_targets_$1)
 save_all_$1: $$(save_targets_$1)
 $$(save_targets_$1): save_%_$1: cache/%/docker_$1.tar
@@ -181,13 +197,13 @@ cache/%/docker_$1.tar: %_$1
 	docker save ${IMAGE}:$$*_$1 -o $$@
 
 #$$(info Create targets: $(addprefix sh_, $(addsuffix _$1, $(DISTROS))) (debug).)
-sh_targets_$1 = $(addprefix sh_, $(addsuffix _$1, $(DISTROS)))
+sh_targets_$1 := $(addprefix sh_, $(addsuffix _$1, $(DISTROS)))
 .PHONY: $$(sh_targets_$1)
 $$(sh_targets_$1): sh_%_$1: %_$1
-	${DOCKER_RUN_CMD} -it --name ${IMAGE}_$$*_$1 ${IMAGE}:$$*_$1
+	${DOCKER_RUN_CMD} -it --name ${PROJECT}_$$*_$1 ${IMAGE}:$$*_$1
 
 #$$(info Create targets: clean_all_$1 $(addprefix clean_, $(addsuffix _$1, $(DISTROS))).)
-clean_targets_$1 = $(addprefix clean_, $(addsuffix _$1, $(DISTROS)))
+clean_targets_$1 := $(addprefix clean_, $(addsuffix _$1, $(DISTROS)))
 .PHONY: clean_all_$1 $$(clean_targets_$1)
 clean_all_$1: $$(clean_targets_$1)
 $$(clean_targets_$1): clean_%_$1:
@@ -213,7 +229,7 @@ $(run_targets): %_run: %_prod
 ##############
 # ref: https://go.dev/doc/install/source#environment
 # ref: https://github.com/containerd/containerd/blob/269548fa27e0089a8b8278fc4fc781d7f65a939b/platforms/platforms.go#L80-L94
-PLATFORMS = \
+PLATFORMS := \
  386 amd64 \
  arm arm64 \
  mips mipsle mips64 mips64le \
@@ -222,18 +238,17 @@ PLATFORMS = \
  s390x
 
 define make-platform-stage-target =
-#$$(info PLATFORM: $1)
-#$$(info STAGE: $2)
+#$$(info PLATFORM: '$1' STAGE: '$2')
 #$$(info Create targets: $1_all_$2 $(addprefix $1_, $(addsuffix _$2, $(DISTROS))).)
-targets_$1_$2 = $(addprefix $1_, $(addsuffix _$2, $(DISTROS)))
+targets_$1_$2 := $(addprefix $1_, $(addsuffix _$2, $(DISTROS)))
 .PHONY: $1_all_$2 $$(targets_$1_$2)
 $1_all_$2: $$(targets_$1_$2)
 $$(targets_$1_$2): $1_%_$2: docker/%/Dockerfile
 	#@docker image rm -f ${IMAGE}:$1_$$*_$2 2>/dev/null
 	${DOCKER_BUILDX_CMD} --platform linux/$1 --target=$2 --tag ${IMAGE}:$1_$$*_$2 -f $$< ..
 
-#$$(info Create targets: save_$1_all_$2 $(addprefix save_$1_, $(addsuffix _$2, $(DISTROS))) (debug).)
-save_targets_$1_$2 = $(addprefix save_$1_, $(addsuffix _$2, $(DISTROS)))
+#$$(info Create save targets: save_$1_all_$2 $(addprefix save_$1_, $(addsuffix _$2, $(DISTROS))) (debug).)
+save_targets_$1_$2 := $(addprefix save_$1_, $(addsuffix _$2, $(DISTROS)))
 .PHONY: save_$1_all_$2 $$(save_targets_$1_$2)
 save_$1_all_$2: $$(save_targets_$1_$2)
 $$(save_targets_$1_$2): save_$1_%_$2: cache/$1/%/docker_$2.tar
@@ -242,14 +257,14 @@ cache/$1/%/docker_$2.tar: $1_%_$2
 	mkdir -p cache/$1/$$*
 	docker save ${IMAGE}:$1_$$*_$2 -o $$@
 
-#$$(info Create targets: $(addprefix sh_$1_, $(addsuffix _$2, $(DISTROS))) (debug).)
-sh_targets_$1_$2 = $(addprefix sh_$1_, $(addsuffix _$2, $(DISTROS)))
+#$$(info Create sh targets: $(addprefix sh_$1_, $(addsuffix _$2, $(DISTROS))) (debug).)
+sh_targets_$1_$2 := $(addprefix sh_$1_, $(addsuffix _$2, $(DISTROS)))
 .PHONY: $$(sh_targets_$1_$2)
 $$(sh_targets_$1_$2): sh_$1_%_$2: $1_%_$2
 	${DOCKER_RUN_CMD} --platform linux/$1 -it --name ${IMAGE}_$1_$$*_$2 ${IMAGE}:$1_$$*_$2
 
 #$$(info Create targets: clean_$1_all_$2 $(addprefix clean_$1_, $(addsuffix _$2, $(DISTROS))).)
-clean_targets_$1_$2 = $(addprefix clean_$1_, $(addsuffix _$2, $(DISTROS)))
+clean_targets_$1_$2 := $(addprefix clean_$1_, $(addsuffix _$2, $(DISTROS)))
 .PHONY: clean_$1_all_$2 $$(clean_targets_$1_$2)
 clean_$1_all_$2: $$(clean_targets_$1_$2)
 $$(clean_targets_$1_$2): clean_$1_%_$2:
@@ -277,58 +292,59 @@ clean_platforms: $(addprefix clean_, $(PLATFORMS))
 ###############
 ## TOOLCHAIN ##
 ###############
-TOOLCHAIN_TARGETS = \
- arm-linux-gnueabihf armv8l-linux-gnueabihf arm-linux-gnueabi armeb-linux-gnueabihf armeb-linux-gnueabi \
- aarch64-linux-gnu aarch64_be-linux-gnu \
+TOOLCHAIN_TARGETS := \
+ arm armv7-eabihf \
+ armeb armebv7-eabihf \
+ arm64 aarch64 \
+ arm64be aarch64be \
  mips mips32-r6 mips32-r2 \
- mipsle mips32el-r6 mips32el-r2 \
+ mipsel mips32el-r6 mips32el-r2 \
  mips64 mips64-r6 mips64-r2 \
- mips64le mips64el-r6 mips64el-r2 \
- arm64 aarch64 aarch64be \
+ mips64el mips64el-r6 mips64el-r2 \
  ppc ppc-440fp ppc-e500mc \
  ppc64 ppc64-power8 \
  ppc64le ppc64le-power8 \
  riscv32 riscv64 \
  s390x
-TOOLCHAIN_STAGES = env devel build test
+TOOLCHAIN_STAGES := env devel build test
 
 define toolchain-stage-target =
 #$$(info STAGE: $1)
-#$$(info Create targets: toolchain_$1 $(addsuffix _$1, $(TOOLCHAIN_TARGETS)).)
-targets_toolchain_$1 = $(addsuffix _$1, $(TOOLCHAIN_TARGETS))
+#$$(info Create targets: toolchain_$1 $(addprefix toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS))).)
+targets_toolchain_$1 := $(addprefix toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS)))
 .PHONY: toolchain_$1 $$(targets_toolchain_$1)
 toolchain_$1: $$(targets_toolchain_$1)
-$$(targets_toolchain_$1): %_$1: docker/toolchain/Dockerfile
-	#@docker image rm -f ${IMAGE}:$$*_$1 2>/dev/null
+$$(targets_toolchain_$1): toolchain_%_$1: docker/toolchain/Dockerfile
+	#@docker image rm -f ${IMAGE}:toolchain_$$*_$1 2>/dev/null
 	${DOCKER_BUILD_CMD} \
- --tag ${IMAGE}:$$*_$1 \
+ --tag ${IMAGE}:toolchain_$$*_$1 \
  --build-arg TARGET=$$* \
  --target=$1 \
  -f $$< \
  ..
 
-#$$(info Create targets: save_toolchain_$1 $(addprefix save_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS))) (debug).)
-save_targets_toolchain_$1 = $(addprefix save_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS)))
+#$$(info Create targets: save_toolchain_$1 $(addprefix save_toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS))) (debug).)
+save_targets_toolchain_$1 := $(addprefix save_toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS)))
 .PHONY: save_toolchain_$1 $$(save_targets_toolchain_$1)
 save_toolchain_$1: $$(save_targets_toolchain_$1)
-$$(save_targets_toolchain_$1): save_%_$1: cache/%/docker_$1.tar
+$$(save_targets_toolchain_$1): save_toolchain_%_$1: cache/%/docker_$1.tar
 cache/%/docker_$1.tar: %_$1
 	@rm -f $$@
 	mkdir -p cache/$$*
-	docker save ${IMAGE}:$$*_$1 -o $$@
+	docker save ${IMAGE}:toolchain_$$*_$1 -o $$@
 
-#$$(info Create targets: $(addprefix sh_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS))) (debug).)
-sh_targets_toolchain_$1 = $(addprefix sh_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS)))
+#$$(info Create targets: $(addprefix sh_toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS))) (debug).)
+sh_targets_toolchain_$1 = $(addprefix sh_toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS)))
 .PHONY: $$(sh_targets_toolchain_$1)
-$$(sh_targets_toolchain_$1): sh_%_$1: %_$1
-	${DOCKER_RUN_CMD} -it --name ${IMAGE}_$$*_$1 ${IMAGE}:$$*_$1
+$$(sh_targets_toolchain_$1): sh_toolchain_%_$1: %_$1
+	${DOCKER_RUN_CMD} -it --name ${PROJECT}_toolchain_$$*_$1 ${IMAGE}:toolchain_$$*_$1
 
-#$$(info Create targets: clean_toolchain_$1 $(addprefix clean_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS))).)
-clean_targets_toolchain_$1 = $(addprefix clean_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS)))
+#$$(info Create targets: clean_toolchain_$1 $(addprefix clean_toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS))).)
+clean_targets_toolchain_$1 = $(addprefix clean_toolchain_, $(addsuffix _$1, $(TOOLCHAIN_TARGETS)))
 .PHONY: clean_toolchain_$1 $$(clean_targets_toolchain_$1)
 clean_toolchain_$1: $$(clean_targets_toolchain_$1)
-$$(clean_targets_toolchain_$1): clean_%_$1:
-	docker image rm -f ${IMAGE}:$$*_$1 2>/dev/null
+$$(clean_targets_toolchain_$1): clean_toolchain_%_$1:
+	docker image rm -f ${IMAGE}:toolchain_$$*_$1 2>/dev/null
 	rm -f cache/$$*/docker_$1.tar
 endef
 

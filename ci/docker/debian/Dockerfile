@@ -1,13 +1,13 @@
 # Create a virtual environment with all tools installed
-# ref: https://hub.docker.com/_/alpine
-FROM alpine:edge AS env
+# ref: https://hub.docker.com/_/debian
+FROM debian:unstable AS env
 
 # Install system build dependencies
 ENV PATH=/usr/local/bin:$PATH
-RUN apk add --no-cache \
- git g++ clang make cmake \
- doxygen graphviz \
- qt6-qtbase-dev ttf-freefont
+RUN apt-get update -qq \
+&& apt-get install -yq git wget libssl-dev build-essential cmake \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Add the library src to our build env
 FROM env AS devel
@@ -25,11 +25,11 @@ RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
 
 # Test install rules
 FROM env AS install_env
-COPY --from=build /usr/local/ /usr/local/
+COPY --from=build /usr/local /usr/local/
 
 FROM install_env AS install_devel
-WORKDIR /home/sample
-COPY ci/sample .
+WORKDIR /home/samples
+COPY ci/samples .
 
 FROM install_devel AS install_build
 RUN cmake -S. -Bbuild
@@ -37,10 +37,3 @@ RUN cmake --build build --target all -v
 
 FROM install_build AS install_test
 RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
-
-# Create a production image
-FROM alpine:edge AS prod
-RUN apk add --no-cache qt-qtbase-x11 ttf-freefont
-# Create app directory
-WORKDIR /home/app
-COPY --from=build /usr/local .
