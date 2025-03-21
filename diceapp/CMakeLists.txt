@@ -30,6 +30,7 @@ elseif(UNIX AND NOT APPLE)
     INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
 endif()
 target_link_libraries(DiceApp Dice::Dice ${QT_LIBS})
+add_executable(${PROJECT_NAMESPACE}::DiceApp ALIAS DiceApp)
 
 # Install
 install(TARGETS DiceApp
