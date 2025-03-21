@@ -4,7 +4,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # Enable output of compile commands during generation.
 option(CMAKE_EXPORT_COMPILE_COMMANDS "Export compile command" ON)
 
-project(DiceGame VERSION 1.0 LANGUAGES CXX)
+project(Dice VERSION 1.0 LANGUAGES CXX)
 set(PROJECT_NAMESPACE Dice)
 message(STATUS "${PROJECT_NAME} version: ${PROJECT_VERSION}")
 #message(STATUS "major: ${PROJECT_VERSION_MAJOR}")
@@ -24,15 +24,15 @@ get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(isMultiConfig)
   if(NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_CONFIGURATION_TYPES "Release;Debug" CACHE STRING
-    "Choose the type of builds, options are: Debug Release RelWithDebInfo MinSizeRel. (default: Release;Debug)"
-    FORCE)
+      "Choose the type of builds, options are: Debug Release RelWithDebInfo MinSizeRel. (default: Release;Debug)"
+      FORCE)
   endif()
   message(STATUS "Configuration types: ${CMAKE_CONFIGURATION_TYPES}")
 else()
   if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING
-    "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel. (default: Release)"
-    FORCE)
+      "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel. (default: Release)"
+      FORCE)
   endif()
   message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 endif()
@@ -126,9 +126,13 @@ if(BUILD_TESTING)
 
   option(BUILD_googletest "Build googletest" ON)
   message(STATUS "Build googletest: ${BUILD_googletest}")
+
+  option(BUILD_catch2 "Build catch2" ON)
+  message(STATUS "Build catch2: ${BUILD_catch2}")
 else()
   set(BUILD_re2 OFF)
   set(BUILD_googletest OFF)
+  set(BUILD_catch2 OFF)
 endif()
 
 # Find system deps

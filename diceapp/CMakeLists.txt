@@ -1,5 +1,4 @@
-include(GNUInstallDirs)
-add_subdirectory(docs)
+#add_subdirectory(docs)
 
 # Qt Setting
 set(CMAKE_AUTOMOC ON)
@@ -32,4 +31,9 @@ elseif(UNIX AND NOT APPLE)
 endif()
 target_link_libraries(DiceApp Dice::Dice ${QT_LIBS})
 
-install(TARGETS DiceApp EXPORT DiceTargets DESTINATION bin)
+# Install
+install(TARGETS DiceApp
+  EXPORT DiceTargets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  COMPONENT RUNTIME
+)

@@ -1,11 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
-project(Dice VERSION 1.0 LANGUAGES CXX)
-message(STATUS "Project: ${PROJECT_NAME}, version: ${PROJECT_VERSION}")
-#message(STATUS "major: ${PROJECT_VERSION_MAJOR}")
-#message(STATUS "minor: ${PROJECT_VERSION_MINOR}")
-#message(STATUS "patch: ${PROJECT_VERSION_PATCH}")
-
-add_subdirectory(docs)
+#add_subdirectory(docs)
 
 file(GLOB_RECURSE _HDRS "include/*.hpp" "include/*hxx")
 file(GLOB_RECURSE _SRCS "src/*.[hc]pp")
@@ -33,10 +26,10 @@ if(BUILD_TESTING)
 endif()
 
 # Install
-include(GNUInstallDirs)
 install(TARGETS Dice
   EXPORT DiceTargets
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/dice
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  COMPONENT RUNTIME)
+  COMPONENT RUNTIME
+)
