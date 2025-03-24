@@ -12,13 +12,13 @@ jobs:
     strategy:
       matrix:
         distro: [
-          # almalinux,
+          # almalinux, # not available
           alpine,
           debian, # currently only unstable not latest
-          # fedora,
-          # opensuse,
-          # rockylinux,
-          #ubuntu,
+          # fedora, # not available
+          # opensuse, # not available
+          # rockylinux, # not available
+          ubuntu,
         ]
       fail-fast: false
     name: riscv64•${{matrix.distro}}
